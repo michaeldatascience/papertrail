@@ -1,0 +1,12 @@
+INDIAN BANK STATEMENT
+Account Holder: Swati Sharma
+Account Number: 123456789012
+Bank: State Bank of India
+Statement Period: 01-03-2026 to 31-03-2026
+
+Date        Description                   Debit      Credit     Balance
+01-03-2026  Opening Balance                                      50,000.00
+05-03-2026  Salary Credit                           80,000.00   130,000.00
+10-03-2026  UPI Payment - Grocery         2,350.00             127,650.00
+28-03-2026  Rent Transfer                25,000.00             102,650.00
+31-03-2026  Closing Balance                                     102,650.00

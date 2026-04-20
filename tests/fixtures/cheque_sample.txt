@@ -1,0 +1,11 @@
+INDIAN CHEQUE
+Bank: HDFC BANK
+Branch: Andheri East, Mumbai
+IFSC: HDFC0000146
+Account No: 50100123456789
+Cheque No: 123456
+Date: 15/01/2026
+Pay: Rajesh Kumar
+Rupees: Fifty Four Thousand Three Hundred Twenty One Only
+Amount: 54,321.00
+Signature: PRESENT
