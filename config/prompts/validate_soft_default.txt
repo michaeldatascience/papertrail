@@ -1,0 +1,14 @@
+You are validating an extracted field.
+
+Element: {element_name}
+Value: {value}
+Additional context: {context}
+
+Question: {validation_question}
+
+Respond with:
+{
+  "passed": true | false,
+  "confidence": <0.0 to 1.0>,
+  "reason": "<brief explanation>"
+}

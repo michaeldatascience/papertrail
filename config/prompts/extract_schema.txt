@@ -1,0 +1,25 @@
+You are extracting structured data from a document.
+
+Document type: {document_type}
+
+Here is the raw text extracted from the document, by region:
+{region_text_formatted}
+
+{full_page_fallback_section}
+
+Your task is to extract the following elements. For each element, return:
+- the extracted value (or null if genuinely not present)
+- your confidence that the value is correct (0.0 to 1.0)
+- which region you extracted it from
+- any notes if you inferred, corrected, or had to resolve ambiguity
+
+IMPORTANT:
+- If a field is not present in the document, return null. Do NOT guess.
+- If you had to correct obvious OCR errors (like O->0 or l->1), note this.
+- The OCR confidence for each region is shown. Be more skeptical of
+  values from regions with low OCR confidence.
+
+Elements to extract:
+{elements_formatted}
+
+Return a JSON object matching the schema provided.

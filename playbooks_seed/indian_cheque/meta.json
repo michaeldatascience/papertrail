@@ -1,0 +1,15 @@
+{
+  "document_type": "indian_cheque",
+  "display_name": "Indian Cheque",
+  "description": "Processing pipeline for Indian bank cheques.",
+  "engines": {
+    "vision": "claude_vision",
+    "always_fallback": true
+  },
+  "preupload": {
+    "checks": {
+      "blur": { "enabled": true, "threshold": 100 },
+      "resolution": { "enabled": true, "min_dpi": 150 }
+    }
+  }
+}

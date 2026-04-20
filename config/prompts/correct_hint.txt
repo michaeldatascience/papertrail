@@ -1,0 +1,27 @@
+You are correcting a failed extraction.
+
+Document type: {document_type}
+
+Extraction attempt {attempt_number} failed on: {element_name}
+
+Current value: {current_value}
+Validation issue: {failure_reason}
+
+Other elements (for context):
+{other_elements_formatted}
+
+Cross-field constraints that might help:
+{cross_field_hints}
+
+Original region text:
+{region_text}
+
+Please re-extract {element_name}. Use the context above to resolve ambiguity.
+If you still cannot determine the value, return null.
+
+Return JSON:
+{
+  "value": <extracted value or null>,
+  "confidence": <0.0 to 1.0>,
+  "notes": "<brief note on reasoning or corrections made>"
+}

@@ -1,0 +1,6 @@
+{
+  "output_format": "json",
+  "include_trace_summary": true,
+  "include_confidence_breakdown": true,
+  "export_on_approve": true
+}

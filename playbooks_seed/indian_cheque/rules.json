@@ -1,0 +1,56 @@
+{
+  "conditions": [
+    {
+      "name": "missing_signature",
+      "type": "hard",
+      "expression": "elements.has_signature == False",
+      "action": "reject",
+      "reason": "Cheque has no signature"
+    },
+    {
+      "name": "stale_cheque",
+      "type": "hard",
+      "expression": "days_since(elements.date) > 90",
+      "action": "flag",
+      "reason": "Cheque is older than 90 days (stale)"
+    },
+    {
+      "name": "post_dated",
+      "type": "hard",
+      "expression": "days_until(elements.date) > 0",
+      "action": "flag",
+      "reason": "Cheque is post-dated"
+    },
+    {
+      "name": "high_value",
+      "type": "hard",
+      "expression": "elements.amount_figures > 1000000",
+      "action": "flag",
+      "reason": "High-value cheque (over 10 lakh)"
+    },
+    {
+      "name": "low_confidence",
+      "type": "hard",
+      "expression": "run.aggregate_confidence < 0.7",
+      "action": "escalate",
+      "reason": "Overall extraction confidence is below threshold"
+    }
+  ],
+  "transformations": [
+    {
+      "name": "lookup_ifsc",
+      "tool": "ifsc_api",
+      "input": "elements.ifsc_code",
+      "output_field": "bank_branch",
+      "run_on": ["approve", "flag"]
+    },
+    {
+      "name": "validate_pan",
+      "tool": "pan_validate",
+      "input": "elements.account_number",
+      "output_field": "account_validation",
+      "run_on": ["approve", "flag"]
+    }
+  ],
+  "default_action": "approve"
+}

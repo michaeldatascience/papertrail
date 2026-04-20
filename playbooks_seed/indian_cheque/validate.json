@@ -1,0 +1,41 @@
+{
+  "hard_rules": {
+    "payee_name": [
+      { "rule": "required" },
+      { "rule": "non_empty" }
+    ],
+    "amount_figures": [
+      { "rule": "required" },
+      { "rule": "positive_decimal" }
+    ],
+    "amount_words": [
+      { "rule": "required" },
+      { "rule": "non_empty" }
+    ],
+    "date": [
+      { "rule": "required" },
+      { "rule": "valid_date" },
+      { "rule": "not_future" }
+    ],
+    "ifsc_code": [
+      { "rule": "regex", "params": { "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$" } }
+    ],
+    "has_signature": [
+      { "rule": "required" }
+    ]
+  },
+  "soft_rules": {
+    "payee_name": [
+      { "prompt_template": "validate_payee_name.txt", "description": "Payee name plausibility" }
+    ]
+  },
+  "cross_field_rules": [
+    {
+      "name": "amount_consistency",
+      "type": "soft",
+      "elements": ["amount_figures", "amount_words"],
+      "prompt_template": "validate_amount_consistency.txt",
+      "description": "Amount in figures matches amount in words"
+    }
+  ]
+}

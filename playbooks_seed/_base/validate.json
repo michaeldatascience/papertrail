@@ -1,0 +1,19 @@
+{
+  "correction": {
+    "enabled": true,
+    "max_attempts": 3,
+    "hint_template": "correct_hint.txt"
+  },
+  "suggestion": {
+    "enabled": true,
+    "template": "suggest.txt"
+  },
+  "scoring": {
+    "confidence_budget_start": 1.0,
+    "warning_penalty": 0.05,
+    "critical_weight": 3.0
+  },
+  "hard_rules": {},
+  "soft_rules": {},
+  "cross_field_rules": []
+}

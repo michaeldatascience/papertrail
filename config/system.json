@@ -1,0 +1,15 @@
+{
+  "max_file_size_mb": 50,
+  "supported_mimes": [
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/tiff"
+  ],
+  "blob_storage_backend": "local",
+  "preupload": {
+    "blur_threshold": 100,
+    "min_resolution_dpi": 150,
+    "max_pages": 50
+  }
+}

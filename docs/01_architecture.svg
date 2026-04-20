@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <style>
+    .title { font-size: 26px; font-weight: 700; fill: #1a2332; }
+    .subtitle { font-size: 13px; fill: #6b7280; font-style: italic; }
+    .layer-title { font-size: 18px; font-weight: 600; fill: #ffffff; }
+    .layer-label { font-size: 11px; fill: #ffffff; opacity: 0.9; }
+    .layer-num { font-size: 14px; font-weight: 700; fill: #ffffff; opacity: 0.7; }
+    .desc { font-size: 12px; fill: #374151; }
+    .desc-bold { font-size: 12px; font-weight: 600; fill: #1a2332; }
+    .footer-label { font-size: 11px; font-weight: 600; fill: #4b5563; }
+    .footer-text { font-size: 11px; fill: #6b7280; }
+    .arrow-label { font-size: 10px; fill: #6b7280; font-style: italic; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#fafbfc"/>
+
+  <!-- Title -->
+  <text x="60" y="45" class="title">PaperTrail — System Architecture</text>
+  <text x="60" y="68" class="subtitle">Agentic IDP pipeline. One Playbook per document type. Every decision traced.</text>
+
+  <!-- Layer 1: Classify -->
+  <rect x="60" y="100" width="880" height="90" rx="8" fill="#2d4a6b"/>
+  <text x="85" y="128" class="layer-num">01</text>
+  <text x="85" y="154" class="layer-title">Classify</text>
+  <text x="85" y="174" class="layer-label">LLM call → document type + confidence. HITL if confidence below threshold.</text>
+  <rect x="775" y="118" width="140" height="54" rx="4" fill="#ffffff" opacity="0.15"/>
+  <text x="845" y="140" class="layer-label" text-anchor="middle" font-weight="600">Output</text>
+  <text x="845" y="158" class="layer-label" text-anchor="middle">type + confidence</text>
+
+  <!-- Layer 2: Extract -->
+  <rect x="60" y="205" width="880" height="140" rx="8" fill="#3d5d7a"/>
+  <text x="85" y="233" class="layer-num">02</text>
+  <text x="85" y="259" class="layer-title">Extract (4 passes)</text>
+  <text x="85" y="281" class="layer-label">Pass A Layout (Docling) · Pass B Raw (OCR/text engines) · Pass C Schema (LLM + Pydantic)</text>
+  <text x="85" y="298" class="layer-label">Source citations per field. Vision LLM when enabled. Engine dispatcher per region.</text>
+
+  <!-- Four pass badges -->
+  <g transform="translate(100, 310)">
+    <rect x="0" y="0" width="120" height="26" rx="13" fill="#ffffff" opacity="0.15"/>
+    <text x="60" y="18" class="layer-label" text-anchor="middle">Pass A · Layout</text>
+  </g>
+  <g transform="translate(230, 310)">
+    <rect x="0" y="0" width="120" height="26" rx="13" fill="#ffffff" opacity="0.15"/>
+    <text x="60" y="18" class="layer-label" text-anchor="middle">Pass B · Raw</text>
+  </g>
+  <g transform="translate(360, 310)">
+    <rect x="0" y="0" width="140" height="26" rx="13" fill="#ffffff" opacity="0.15"/>
+    <text x="70" y="18" class="layer-label" text-anchor="middle">Pass C · Schema</text>
+  </g>
+  <g transform="translate(510, 310)">
+    <rect x="0" y="0" width="150" height="26" rx="13" fill="#ffffff" opacity="0.15"/>
+    <text x="75" y="18" class="layer-label" text-anchor="middle">Pass D · Validate</text>
+  </g>
+
+  <!-- Layer 3: Validate -->
+  <rect x="60" y="360" width="880" height="105" rx="8" fill="#4d7099"/>
+  <text x="85" y="388" class="layer-num">03</text>
+  <text x="85" y="414" class="layer-title">Validate</text>
+  <text x="85" y="434" class="layer-label">Per-element hard rules (code) + soft rules (LLM). Cross-field consistency.</text>
+  <text x="85" y="451" class="layer-label">Correction loop on fail (up to 3 retries, targeted hints). Suggestion on exhaust.</text>
+
+  <!-- Correction loop indicator -->
+  <rect x="775" y="385" width="140" height="56" rx="4" fill="#ffffff" opacity="0.15"/>
+  <text x="845" y="407" class="layer-label" text-anchor="middle" font-weight="600">On fail</text>
+  <text x="845" y="425" class="layer-label" text-anchor="middle">→ retry w/ hints</text>
+  <text x="845" y="440" class="layer-label" text-anchor="middle">→ suggest + HITL</text>
+
+  <!-- Layer 4: Decide -->
+  <rect x="60" y="480" width="880" height="105" rx="8" fill="#c78a3c"/>
+  <text x="85" y="508" class="layer-num">04</text>
+  <text x="85" y="534" class="layer-title">Decide</text>
+  <text x="85" y="554" class="layer-label">Conditions (filters + flags) and Transformations (enrichment + tool calls).</text>
+  <text x="85" y="571" class="layer-label">Precedence: reject &gt; escalate &gt; flag &gt; approve. All fired conditions logged.</text>
+
+  <!-- Decision outcomes -->
+  <g transform="translate(655, 500)">
+    <rect x="0" y="0" width="62" height="22" rx="11" fill="#ffffff" opacity="0.2"/>
+    <text x="31" y="16" class="layer-label" text-anchor="middle" font-weight="600">approve</text>
+  </g>
+  <g transform="translate(720, 500)">
+    <rect x="0" y="0" width="48" height="22" rx="11" fill="#ffffff" opacity="0.2"/>
+    <text x="24" y="16" class="layer-label" text-anchor="middle" font-weight="600">flag</text>
+  </g>
+  <g transform="translate(775, 500)">
+    <rect x="0" y="0" width="58" height="22" rx="11" fill="#ffffff" opacity="0.2"/>
+    <text x="29" y="16" class="layer-label" text-anchor="middle" font-weight="600">reject</text>
+  </g>
+  <g transform="translate(843, 500)">
+    <rect x="0" y="0" width="72" height="22" rx="11" fill="#ffffff" opacity="0.2"/>
+    <text x="36" y="16" class="layer-label" text-anchor="middle" font-weight="600">escalate</text>
+  </g>
+
+  <!-- Layer 5: Act -->
+  <rect x="60" y="600" width="880" height="75" rx="8" fill="#1a2332"/>
+  <text x="85" y="627" class="layer-num">05</text>
+  <text x="85" y="650" class="layer-title">Act</text>
+  <text x="85" y="667" class="layer-label">Export output. Notify. Archive. Immutable run record. Trace queryable forever.</text>
+
+  <!-- Sidebar: Storage & Observability -->
+  <rect x="960" y="100" width="180" height="575" rx="8" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+  <text x="1050" y="128" class="desc-bold" text-anchor="middle">Foundation</text>
+  <line x1="990" y1="140" x2="1110" y2="140" stroke="#9ca3af" stroke-width="1"/>
+
+  <text x="980" y="168" class="footer-label">Storage</text>
+  <text x="980" y="188" class="footer-text">PostgreSQL 15</text>
+  <text x="980" y="204" class="footer-text">+ jsonb for configs</text>
+  <text x="980" y="220" class="footer-text">+ blob for inputs</text>
+
+  <text x="980" y="255" class="footer-label">Orchestration</text>
+  <text x="980" y="275" class="footer-text">LangGraph</text>
+  <text x="980" y="291" class="footer-text">state machine</text>
+  <text x="980" y="307" class="footer-text">+ HITL checkpoints</text>
+
+  <text x="980" y="342" class="footer-label">LLM Routing</text>
+  <text x="980" y="362" class="footer-text">OpenRouter</text>
+  <text x="980" y="378" class="footer-text">Haiku for cheap</text>
+  <text x="980" y="394" class="footer-text">Sonnet for hard</text>
+
+  <text x="980" y="429" class="footer-label">Observability</text>
+  <text x="980" y="449" class="footer-text">Langfuse (LLM)</text>
+  <text x="980" y="465" class="footer-text">structlog (app)</text>
+  <text x="980" y="481" class="footer-text">OpenTelemetry</text>
+
+  <text x="980" y="516" class="footer-label">Interface</text>
+  <text x="980" y="536" class="footer-text">CLI (primary)</text>
+  <text x="980" y="552" class="footer-text">FastAPI</text>
+  <text x="980" y="568" class="footer-text">Streamlit (demo)</text>
+
+  <text x="980" y="603" class="footer-label">Configuration</text>
+  <text x="980" y="623" class="footer-text">Playbooks in DB</text>
+  <text x="980" y="639" class="footer-text">6 JSON sections</text>
+  <text x="980" y="655" class="footer-text">_base inheritance</text>
+
+  <!-- Flow arrows between layers -->
+  <path d="M 500 190 L 500 205" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 500 345 L 500 360" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 500 465 L 500 480" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 500 585 L 500 600" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+
+  <!-- Footer -->
+  <text x="60" y="730" class="footer-label">Input:</text>
+  <text x="100" y="730" class="footer-text">PDF · JPG · PNG (Indian financial documents as primary domain)</text>
+  <text x="60" y="750" class="footer-label">Output:</text>
+  <text x="105" y="750" class="footer-text">Structured JSON · decision · warnings · full trace · immutable record</text>
+  <text x="60" y="770" class="footer-label">Team:</text>
+  <text x="100" y="770" class="footer-text">Twenty — Almichael · Anuj · Rajesh · Swati</text>
+  <text x="1140" y="770" class="footer-text" text-anchor="end">PaperTrail v1.0 · Capstone · Feb–May 2026</text>
+</svg>

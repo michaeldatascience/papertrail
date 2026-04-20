@@ -1,0 +1,8 @@
+{
+  "candidates": [
+    { "label": "indian_cheque", "description": "An Indian bank cheque with MICR line, payee, amount, date, signature" },
+    { "label": "indian_bank_statement", "description": "A bank account statement" },
+    { "label": "indian_salary_slip", "description": "An employee salary/pay slip" },
+    { "label": "indian_itr_form", "description": "An income tax return form" }
+  ]
+}

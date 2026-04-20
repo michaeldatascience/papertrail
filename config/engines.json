@@ -1,0 +1,13 @@
+{
+  "defaults": {
+    "layout": "docling",
+    "text_extraction": "pymupdf",
+    "ocr": "paddleocr",
+    "ocr_fallback": "tesseract",
+    "tables": "pdfplumber",
+    "vision": null
+  },
+  "confidence_threshold_for_fallback": 0.5,
+  "layout_confidence_threshold_for_full_page_ocr": 0.75,
+  "ocr_languages": ["en", "hi"]
+}

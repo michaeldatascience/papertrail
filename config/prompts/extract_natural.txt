@@ -1,0 +1,17 @@
+You are extracting information from a document.
+
+Document type: {document_type}
+
+Here is the raw text extracted from the document:
+{region_text_formatted}
+
+Based on the following natural-language description, extract what you can:
+
+{natural_description}
+
+Return a JSON object with whatever fields you can extract. For each field:
+- value: the extracted value
+- confidence: 0.0 to 1.0
+- source: where in the document you found it
+
+Do your best. Null is acceptable if you cannot find something.

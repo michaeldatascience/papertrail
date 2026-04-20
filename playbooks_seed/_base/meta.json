@@ -1,0 +1,23 @@
+{
+  "document_type": "base",
+  "display_name": "Base Playbook",
+  "description": "Default settings inherited by all Playbooks.",
+  "engines": {
+    "layout": "docling",
+    "text_extraction": "pymupdf",
+    "ocr": "paddleocr",
+    "ocr_fallback": "tesseract",
+    "tables": "pdfplumber",
+    "vision": null,
+    "always_fallback": false
+  },
+  "preupload": {
+    "checks": {
+      "file_integrity": { "enabled": true },
+      "format": { "enabled": true },
+      "size": { "enabled": true, "max_mb": 50 },
+      "blur": { "enabled": false, "threshold": 100 },
+      "resolution": { "enabled": false, "min_dpi": 150 }
+    }
+  }
+}

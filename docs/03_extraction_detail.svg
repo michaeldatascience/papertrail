@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <style>
+    .title { font-size: 24px; font-weight: 700; fill: #1a2332; }
+    .subtitle { font-size: 13px; fill: #6b7280; font-style: italic; }
+    .pass-title { font-size: 18px; font-weight: 700; fill: #ffffff; }
+    .pass-num { font-size: 11px; font-weight: 700; fill: #ffffff; opacity: 0.7; letter-spacing: 1px; }
+    .pass-desc { font-size: 12px; fill: #ffffff; opacity: 0.9; }
+    .section-label { font-size: 11px; font-weight: 700; fill: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+    .detail-title { font-size: 13px; font-weight: 600; fill: #1a2332; }
+    .detail-text { font-size: 11px; fill: #374151; line-height: 1.4; }
+    .mono { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 10px; fill: #1f2937; }
+    .code-bg { fill: #f3f4f6; stroke: #e5e7eb; stroke-width: 1; }
+  </style>
+
+  <rect width="1200" height="900" fill="#fafbfc"/>
+
+  <text x="60" y="40" class="title">Extraction — The 4-Pass Engine</text>
+  <text x="60" y="62" class="subtitle">Each pass does one job. Output format fixed. Downstream passes consume whatever upstream produced.</text>
+
+  <!-- Pass A -->
+  <g transform="translate(60, 100)">
+    <rect width="200" height="700" rx="8" fill="#2d4a6b"/>
+    <text x="100" y="35" class="pass-num" text-anchor="middle">PASS A</text>
+    <text x="100" y="62" class="pass-title" text-anchor="middle">Layout</text>
+
+    <line x1="20" y1="85" x2="180" y2="85" stroke="#ffffff" opacity="0.3"/>
+
+    <text x="20" y="115" class="pass-desc" font-weight="600">Engine</text>
+    <text x="20" y="133" class="pass-desc">Docling</text>
+
+    <text x="20" y="165" class="pass-desc" font-weight="600">Does</text>
+    <text x="20" y="183" class="pass-desc">Analyzes document</text>
+    <text x="20" y="199" class="pass-desc">structure. Produces</text>
+    <text x="20" y="215" class="pass-desc">region map per page</text>
+    <text x="20" y="231" class="pass-desc">with reading order.</text>
+
+    <text x="20" y="265" class="pass-desc" font-weight="600">Output shape</text>
+    <rect x="15" y="275" width="170" height="180" class="code-bg" rx="3" fill="#1a2332" opacity="0.3"/>
+    <text x="22" y="292" class="mono" fill="#ffffff">{</text>
+    <text x="22" y="308" class="mono" fill="#ffffff">  "pages": [</text>
+    <text x="22" y="324" class="mono" fill="#ffffff">    {</text>
+    <text x="22" y="340" class="mono" fill="#ffffff">      "page_num": 1,</text>
+    <text x="22" y="356" class="mono" fill="#ffffff">      "regions": [</text>
+    <text x="22" y="372" class="mono" fill="#ffffff">        {region...}</text>
+    <text x="22" y="388" class="mono" fill="#ffffff">      ],</text>
+    <text x="22" y="404" class="mono" fill="#ffffff">      "confidence":</text>
+    <text x="22" y="420" class="mono" fill="#ffffff">         0.93</text>
+    <text x="22" y="436" class="mono" fill="#ffffff">    }</text>
+    <text x="22" y="452" class="mono" fill="#ffffff">  ]</text>
+
+    <text x="20" y="490" class="pass-desc" font-weight="600">Always produces</text>
+    <text x="20" y="508" class="pass-desc">Both structured map</text>
+    <text x="20" y="524" class="pass-desc">AND fallback plain</text>
+    <text x="20" y="540" class="pass-desc">text extraction.</text>
+
+    <text x="20" y="570" class="pass-desc" font-weight="600">Multi-page</text>
+    <text x="20" y="588" class="pass-desc">Abstracted downstream.</text>
+    <text x="20" y="604" class="pass-desc">1 page or 50 pages —</text>
+    <text x="20" y="620" class="pass-desc">same shape.</text>
+
+    <text x="20" y="660" class="pass-desc" font-weight="600" opacity="0.7">Latency</text>
+    <text x="20" y="678" class="pass-desc" opacity="0.8">~500ms-2s</text>
+  </g>
+
+  <!-- Pass B -->
+  <g transform="translate(290, 100)">
+    <rect width="200" height="700" rx="8" fill="#3d5d7a"/>
+    <text x="100" y="35" class="pass-num" text-anchor="middle">PASS B</text>
+    <text x="100" y="62" class="pass-title" text-anchor="middle">Raw</text>
+
+    <line x1="20" y1="85" x2="180" y2="85" stroke="#ffffff" opacity="0.3"/>
+
+    <text x="20" y="115" class="pass-desc" font-weight="600">Engines (by region)</text>
+    <text x="20" y="135" class="pass-desc">• PyMuPDF (text layer)</text>
+    <text x="20" y="151" class="pass-desc">• PaddleOCR (scans)</text>
+    <text x="20" y="167" class="pass-desc">• pdfplumber (tables)</text>
+    <text x="20" y="183" class="pass-desc">• Claude Vision (hard)</text>
+
+    <text x="20" y="217" class="pass-desc" font-weight="600">Does</text>
+    <text x="20" y="235" class="pass-desc">Dispatches each</text>
+    <text x="20" y="251" class="pass-desc">region to the right</text>
+    <text x="20" y="267" class="pass-desc">engine. Extracts raw</text>
+    <text x="20" y="283" class="pass-desc">text with per-region</text>
+    <text x="20" y="299" class="pass-desc">confidence.</text>
+
+    <text x="20" y="333" class="pass-desc" font-weight="600">Output shape</text>
+    <rect x="15" y="345" width="170" height="180" class="code-bg" rx="3" fill="#1a2332" opacity="0.3"/>
+    <text x="22" y="362" class="mono" fill="#ffffff">{</text>
+    <text x="22" y="378" class="mono" fill="#ffffff">  "pages": [{</text>
+    <text x="22" y="394" class="mono" fill="#ffffff">    "regions": [{</text>
+    <text x="22" y="410" class="mono" fill="#ffffff">      "id": "payee",</text>
+    <text x="22" y="426" class="mono" fill="#ffffff">      "text": "...",</text>
+    <text x="22" y="442" class="mono" fill="#ffffff">      "engine":</text>
+    <text x="22" y="458" class="mono" fill="#ffffff">        "paddleocr",</text>
+    <text x="22" y="474" class="mono" fill="#ffffff">      "confidence":</text>
+    <text x="22" y="490" class="mono" fill="#ffffff">        0.87</text>
+    <text x="22" y="506" class="mono" fill="#ffffff">    }]</text>
+    <text x="22" y="522" class="mono" fill="#ffffff">  }]</text>
+
+    <text x="20" y="565" class="pass-desc" font-weight="600">Also produces</text>
+    <text x="20" y="583" class="pass-desc">Full-page fallback</text>
+    <text x="20" y="599" class="pass-desc">OCR when layout</text>
+    <text x="20" y="615" class="pass-desc">confidence is low.</text>
+
+    <text x="20" y="660" class="pass-desc" font-weight="600" opacity="0.7">Latency</text>
+    <text x="20" y="678" class="pass-desc" opacity="0.8">~2-10s (depends on OCR)</text>
+  </g>
+
+  <!-- Pass C -->
+  <g transform="translate(520, 100)">
+    <rect width="200" height="700" rx="8" fill="#4d7099"/>
+    <text x="100" y="35" class="pass-num" text-anchor="middle">PASS C</text>
+    <text x="100" y="62" class="pass-title" text-anchor="middle">Schema</text>
+
+    <line x1="20" y1="85" x2="180" y2="85" stroke="#ffffff" opacity="0.3"/>
+
+    <text x="20" y="115" class="pass-desc" font-weight="600">Engine</text>
+    <text x="20" y="133" class="pass-desc">LLM + Instructor</text>
+    <text x="20" y="149" class="pass-desc">+ Pydantic schema</text>
+    <text x="20" y="165" class="pass-desc">(stronger model)</text>
+
+    <text x="20" y="197" class="pass-desc" font-weight="600">Does</text>
+    <text x="20" y="215" class="pass-desc">Maps raw text into</text>
+    <text x="20" y="231" class="pass-desc">typed structured</text>
+    <text x="20" y="247" class="pass-desc">output. Explicit null</text>
+    <text x="20" y="263" class="pass-desc">on absent fields.</text>
+
+    <text x="20" y="295" class="pass-desc" font-weight="600">Two modes</text>
+    <text x="20" y="313" class="pass-desc">• schema (strict)</text>
+    <text x="20" y="329" class="pass-desc">• natural (loose)</text>
+
+    <text x="20" y="363" class="pass-desc" font-weight="600">Output shape</text>
+    <rect x="15" y="375" width="170" height="185" class="code-bg" rx="3" fill="#1a2332" opacity="0.3"/>
+    <text x="22" y="392" class="mono" fill="#ffffff">{</text>
+    <text x="22" y="408" class="mono" fill="#ffffff">  "payee": {</text>
+    <text x="22" y="424" class="mono" fill="#ffffff">    "value": "...",</text>
+    <text x="22" y="440" class="mono" fill="#ffffff">    "llm_conf": 0.95,</text>
+    <text x="22" y="456" class="mono" fill="#ffffff">    "ocr_conf": 0.87,</text>
+    <text x="22" y="472" class="mono" fill="#ffffff">    "source":</text>
+    <text x="22" y="488" class="mono" fill="#ffffff">      "payee_p1",</text>
+    <text x="22" y="504" class="mono" fill="#ffffff">    "notes": null</text>
+    <text x="22" y="520" class="mono" fill="#ffffff">  },</text>
+    <text x="22" y="536" class="mono" fill="#ffffff">  ...</text>
+
+    <text x="20" y="590" class="pass-desc" font-weight="600">Source citation</text>
+    <text x="20" y="608" class="pass-desc">Every field cites the</text>
+    <text x="20" y="624" class="pass-desc">region it came from.</text>
+
+    <text x="20" y="660" class="pass-desc" font-weight="600" opacity="0.7">Latency</text>
+    <text x="20" y="678" class="pass-desc" opacity="0.8">~3-8s (one LLM call)</text>
+  </g>
+
+  <!-- Pass D -->
+  <g transform="translate(750, 100)">
+    <rect width="200" height="700" rx="8" fill="#5d7fa8"/>
+    <text x="100" y="35" class="pass-num" text-anchor="middle">PASS D</text>
+    <text x="100" y="62" class="pass-title" text-anchor="middle">Validate</text>
+
+    <line x1="20" y1="85" x2="180" y2="85" stroke="#ffffff" opacity="0.3"/>
+
+    <text x="20" y="115" class="pass-desc" font-weight="600">Two flavours</text>
+    <text x="20" y="133" class="pass-desc">• Hard (code rules)</text>
+    <text x="20" y="149" class="pass-desc">• Soft (LLM rules)</text>
+
+    <text x="20" y="181" class="pass-desc" font-weight="600">Per element</text>
+    <text x="20" y="199" class="pass-desc">Element declares which</text>
+    <text x="20" y="215" class="pass-desc">flavour. Not mixed.</text>
+    <text x="20" y="231" class="pass-desc">Isolated failures.</text>
+
+    <text x="20" y="263" class="pass-desc" font-weight="600">Cross-field</text>
+    <text x="20" y="281" class="pass-desc">Consistency rules</text>
+    <text x="20" y="297" class="pass-desc">across elements.</text>
+    <text x="20" y="313" class="pass-desc">(amount ≈ words, etc.)</text>
+
+    <text x="20" y="345" class="pass-desc" font-weight="600">On fail</text>
+    <text x="20" y="363" class="pass-desc">Correction loop fires.</text>
+    <text x="20" y="379" class="pass-desc">Failed elements only.</text>
+
+    <text x="20" y="413" class="pass-desc" font-weight="600">Output shape</text>
+    <rect x="15" y="425" width="170" height="180" class="code-bg" rx="3" fill="#1a2332" opacity="0.3"/>
+    <text x="22" y="442" class="mono" fill="#ffffff">{</text>
+    <text x="22" y="458" class="mono" fill="#ffffff">  "per_element": {</text>
+    <text x="22" y="474" class="mono" fill="#ffffff">    "payee": "pass",</text>
+    <text x="22" y="490" class="mono" fill="#ffffff">    "date": "fail",</text>
+    <text x="22" y="506" class="mono" fill="#ffffff">    ...</text>
+    <text x="22" y="522" class="mono" fill="#ffffff">  },</text>
+    <text x="22" y="538" class="mono" fill="#ffffff">  "cross_field": {...},</text>
+    <text x="22" y="554" class="mono" fill="#ffffff">  "aggregate":</text>
+    <text x="22" y="570" class="mono" fill="#ffffff">    0.82,</text>
+    <text x="22" y="586" class="mono" fill="#ffffff">  "passed": false</text>
+
+    <text x="20" y="660" class="pass-desc" font-weight="600" opacity="0.7">Latency</text>
+    <text x="20" y="678" class="pass-desc" opacity="0.8">~1-5s (LLM for soft)</text>
+  </g>
+
+  <!-- Correction loop box -->
+  <g transform="translate(980, 100)">
+    <rect width="180" height="700" rx="8" fill="#fef3e7" stroke="#c78a3c" stroke-width="2"/>
+    <text x="90" y="35" class="pass-num" text-anchor="middle" fill="#c78a3c">CORRECTION</text>
+    <text x="90" y="62" class="pass-title" text-anchor="middle" fill="#c78a3c">Loop</text>
+
+    <line x1="20" y1="85" x2="160" y2="85" stroke="#c78a3c" opacity="0.3"/>
+
+    <text x="20" y="115" class="detail-title">Fires when</text>
+    <text x="20" y="133" class="detail-text">Pass D reports fail</text>
+    <text x="20" y="149" class="detail-text">on extraction-quality</text>
+    <text x="20" y="165" class="detail-text">rules (not business).</text>
+
+    <text x="20" y="200" class="detail-title">Hint format</text>
+    <text x="20" y="218" class="detail-text">Element-specific.</text>
+    <text x="20" y="234" class="detail-text">Says what failed,</text>
+    <text x="20" y="250" class="detail-text">what was seen,</text>
+    <text x="20" y="266" class="detail-text">cross-field context.</text>
+
+    <text x="20" y="300" class="detail-title">Retry scope</text>
+    <text x="20" y="318" class="detail-text">Failed elements</text>
+    <text x="20" y="334" class="detail-text">only. Passing ones</text>
+    <text x="20" y="350" class="detail-text">preserved (merge).</text>
+
+    <text x="20" y="385" class="detail-title">Cap</text>
+    <text x="20" y="403" class="detail-text">3 attempts (config).</text>
+
+    <text x="20" y="438" class="detail-title">On exhaust</text>
+    <text x="20" y="456" class="detail-text">LLM reads full trace.</text>
+    <text x="20" y="472" class="detail-text">Produces diagnostic</text>
+    <text x="20" y="488" class="detail-text">suggestion.</text>
+
+    <text x="20" y="522" class="detail-title">HITL</text>
+    <text x="20" y="540" class="detail-text">Read-only. Human</text>
+    <text x="20" y="556" class="detail-text">reviews suggestion.</text>
+    <text x="20" y="572" class="detail-text">Decides final outcome.</text>
+
+    <text x="20" y="625" class="detail-title">Goes back to</text>
+    <g transform="translate(20, 635)">
+      <rect width="140" height="25" rx="4" fill="#c78a3c"/>
+      <text x="70" y="17" class="detail-text" text-anchor="middle" fill="#ffffff" font-weight="600">Pass C (targeted)</text>
+    </g>
+  </g>
+
+  <!-- Arrows between passes (bottom) -->
+  <g transform="translate(0, 820)">
+    <path d="M 260 20 L 290 20" stroke="#4b5563" stroke-width="2" marker-end="url(#px)"/>
+    <path d="M 490 20 L 520 20" stroke="#4b5563" stroke-width="2" marker-end="url(#px)"/>
+    <path d="M 720 20 L 750 20" stroke="#4b5563" stroke-width="2" marker-end="url(#px)"/>
+
+    <path d="M 870 50 C 920 60 970 40 990 30" fill="none" stroke="#c78a3c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ax)"/>
+    <text x="920" y="75" class="detail-text" fill="#c78a3c" font-style="italic" text-anchor="middle">on fail</text>
+
+    <path d="M 980 10 C 880 -30 780 -30 700 0" fill="none" stroke="#c78a3c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ax)"/>
+  </g>
+
+  <defs>
+    <marker id="px" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
+    </marker>
+    <marker id="ax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c78a3c"/>
+    </marker>
+  </defs>
+</svg>

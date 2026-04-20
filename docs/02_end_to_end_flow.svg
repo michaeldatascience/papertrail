@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 700" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <style>
+    .title { font-size: 24px; font-weight: 700; fill: #1a2332; }
+    .subtitle { font-size: 13px; fill: #6b7280; font-style: italic; }
+    .stage-title { font-size: 13px; font-weight: 700; fill: #1a2332; }
+    .stage-desc { font-size: 11px; fill: #374151; }
+    .stage-num { font-size: 10px; font-weight: 700; fill: #9ca3af; }
+    .decision-text { font-size: 11px; font-weight: 600; fill: #1a2332; }
+    .decision-subtext { font-size: 10px; fill: #6b7280; }
+    .section-label { font-size: 12px; font-weight: 700; fill: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+    .branch-label { font-size: 10px; fill: #6b7280; font-style: italic; }
+    .legend-text { font-size: 11px; fill: #374151; }
+    .legend-label { font-size: 11px; font-weight: 600; fill: #1a2332; }
+  </style>
+
+  <rect width="1400" height="700" fill="#fafbfc"/>
+
+  <!-- Title -->
+  <text x="60" y="40" class="title">End-to-End Flow</text>
+  <text x="60" y="62" class="subtitle">What happens to a document from upload to final decision</text>
+
+  <!-- Main flow pipeline -->
+  <g transform="translate(0, 100)">
+
+    <!-- Stage 1: Upload -->
+    <g transform="translate(60, 80)">
+      <rect width="140" height="100" rx="6" fill="#ffffff" stroke="#2d4a6b" stroke-width="2"/>
+      <text x="70" y="22" class="stage-num" text-anchor="middle">STAGE 01</text>
+      <text x="70" y="44" class="stage-title" text-anchor="middle">Upload</text>
+      <text x="70" y="66" class="stage-desc" text-anchor="middle">File + Playbook</text>
+      <text x="70" y="82" class="stage-desc" text-anchor="middle">selection</text>
+      <text x="70" y="95" class="stage-desc" text-anchor="middle" fill="#6b7280">SHA256 hash</text>
+    </g>
+
+    <!-- Arrow 1 -->
+    <path d="M 200 230 L 230 230" stroke="#4b5563" stroke-width="2" marker-end="url(#a)"/>
+
+    <!-- Stage 2: Pre-check -->
+    <g transform="translate(230, 80)">
+      <rect width="140" height="100" rx="6" fill="#ffffff" stroke="#2d4a6b" stroke-width="2"/>
+      <text x="70" y="22" class="stage-num" text-anchor="middle">STAGE 02</text>
+      <text x="70" y="44" class="stage-title" text-anchor="middle">Pre-upload</text>
+      <text x="70" y="66" class="stage-desc" text-anchor="middle">Integrity · format</text>
+      <text x="70" y="82" class="stage-desc" text-anchor="middle">blur · resolution</text>
+      <text x="70" y="95" class="stage-desc" text-anchor="middle" fill="#6b7280">block / warn / pass</text>
+    </g>
+
+    <!-- Arrow 2 -->
+    <path d="M 370 230 L 400 230" stroke="#4b5563" stroke-width="2" marker-end="url(#a)"/>
+
+    <!-- Stage 3: Classify -->
+    <g transform="translate(400, 80)">
+      <rect width="140" height="100" rx="6" fill="#2d4a6b"/>
+      <text x="70" y="22" class="stage-num" text-anchor="middle" fill="#ffffff" opacity="0.7">STAGE 03</text>
+      <text x="70" y="44" class="stage-title" text-anchor="middle" fill="#ffffff">Classify</text>
+      <text x="70" y="66" class="stage-desc" text-anchor="middle" fill="#ffffff">LLM call</text>
+      <text x="70" y="82" class="stage-desc" text-anchor="middle" fill="#ffffff">type + confidence</text>
+      <text x="70" y="96" class="stage-desc" text-anchor="middle" fill="#ffffff" opacity="0.8">cheap model</text>
+    </g>
+
+    <!-- HITL branch from classify -->
+    <path d="M 470 180 L 470 30 L 320 30 L 320 80" stroke="#c78a3c" stroke-width="2" stroke-dasharray="4,4" fill="none" marker-end="url(#ah)"/>
+    <text x="380" y="22" class="branch-label" fill="#c78a3c">if low confidence → human review → manual type</text>
+
+    <!-- Arrow 3 -->
+    <path d="M 540 230 L 570 230" stroke="#4b5563" stroke-width="2" marker-end="url(#a)"/>
+
+    <!-- Stage 4: Extract -->
+    <g transform="translate(570, 80)">
+      <rect width="400" height="220" rx="6" fill="#ffffff" stroke="#3d5d7a" stroke-width="2"/>
+      <text x="200" y="22" class="stage-num" text-anchor="middle">STAGE 04 · EXTRACT</text>
+      <text x="200" y="42" class="stage-title" text-anchor="middle">4-Pass Extraction Engine</text>
+
+      <!-- Pass A -->
+      <g transform="translate(20, 60)">
+        <rect width="160" height="65" rx="4" fill="#3d5d7a"/>
+        <text x="80" y="18" class="stage-title" text-anchor="middle" fill="#ffffff">Pass A · Layout</text>
+        <text x="80" y="35" class="stage-desc" text-anchor="middle" fill="#ffffff">Docling</text>
+        <text x="80" y="50" class="stage-desc" text-anchor="middle" fill="#ffffff" opacity="0.85">Regions + reading order</text>
+      </g>
+
+      <!-- Pass B -->
+      <g transform="translate(200, 60)">
+        <rect width="180" height="65" rx="4" fill="#3d5d7a"/>
+        <text x="90" y="18" class="stage-title" text-anchor="middle" fill="#ffffff">Pass B · Raw</text>
+        <text x="90" y="35" class="stage-desc" text-anchor="middle" fill="#ffffff">PaddleOCR · PyMuPDF</text>
+        <text x="90" y="50" class="stage-desc" text-anchor="middle" fill="#ffffff" opacity="0.85">Region text + fallback</text>
+      </g>
+
+      <!-- Pass C -->
+      <g transform="translate(20, 135)">
+        <rect width="160" height="65" rx="4" fill="#3d5d7a"/>
+        <text x="80" y="18" class="stage-title" text-anchor="middle" fill="#ffffff">Pass C · Schema</text>
+        <text x="80" y="35" class="stage-desc" text-anchor="middle" fill="#ffffff">LLM + Instructor</text>
+        <text x="80" y="50" class="stage-desc" text-anchor="middle" fill="#ffffff" opacity="0.85">Typed Pydantic output</text>
+      </g>
+
+      <!-- Pass D -->
+      <g transform="translate(200, 135)">
+        <rect width="180" height="65" rx="4" fill="#3d5d7a"/>
+        <text x="90" y="18" class="stage-title" text-anchor="middle" fill="#ffffff">Pass D · Validate</text>
+        <text x="90" y="35" class="stage-desc" text-anchor="middle" fill="#ffffff">Hard + Soft rules</text>
+        <text x="90" y="50" class="stage-desc" text-anchor="middle" fill="#ffffff" opacity="0.85">Per-element + cross-field</text>
+      </g>
+
+      <!-- Arrows between passes -->
+      <path d="M 105 125 L 105 135" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ag)"/>
+      <path d="M 185 92 L 200 92" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ag)"/>
+      <path d="M 290 125 L 290 135" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ag)"/>
+      <path d="M 185 167 L 200 167" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ag)"/>
+    </g>
+
+    <!-- Correction loop -->
+    <g transform="translate(570, 330)">
+      <rect width="400" height="75" rx="6" fill="#fef3e7" stroke="#c78a3c" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="200" y="22" class="stage-num" text-anchor="middle" fill="#c78a3c">CORRECTION LOOP · up to 3 retries</text>
+      <text x="200" y="42" class="stage-desc" text-anchor="middle">Targeted hints per failed element · merge_strategy = keep_passing</text>
+      <text x="200" y="60" class="stage-desc" text-anchor="middle" fill="#6b7280">On exhaust → LLM suggestion → HITL read-only review → escalate</text>
+    </g>
+
+    <!-- Curved arrow from validation failure back to extraction -->
+    <path d="M 860 300 L 860 325 L 700 325 L 700 175" fill="none" stroke="#c78a3c" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#ah)"/>
+    <text x="780" y="355" class="branch-label" fill="#c78a3c" text-anchor="middle">retry on validation failure</text>
+
+    <!-- Arrow to Decide -->
+    <path d="M 970 190 L 1005 190" stroke="#4b5563" stroke-width="2" marker-end="url(#a)"/>
+
+    <!-- Stage 5: Decide -->
+    <g transform="translate(1005, 80)">
+      <rect width="160" height="220" rx="6" fill="#c78a3c"/>
+      <text x="80" y="22" class="stage-num" text-anchor="middle" fill="#ffffff" opacity="0.8">STAGE 05</text>
+      <text x="80" y="44" class="stage-title" text-anchor="middle" fill="#ffffff">Decide</text>
+      <line x1="20" y1="60" x2="140" y2="60" stroke="#ffffff" opacity="0.3" stroke-width="1"/>
+
+      <text x="80" y="80" class="stage-desc" text-anchor="middle" fill="#ffffff" font-weight="600">Conditions</text>
+      <text x="80" y="95" class="stage-desc" text-anchor="middle" fill="#ffffff" font-size="10">flags · filters</text>
+
+      <text x="80" y="120" class="stage-desc" text-anchor="middle" fill="#ffffff" font-weight="600">Transformations</text>
+      <text x="80" y="135" class="stage-desc" text-anchor="middle" fill="#ffffff" font-size="10">tool calls · enrichment</text>
+
+      <line x1="20" y1="155" x2="140" y2="155" stroke="#ffffff" opacity="0.3" stroke-width="1"/>
+
+      <text x="80" y="175" class="stage-desc" text-anchor="middle" fill="#ffffff" font-weight="600">Precedence</text>
+      <text x="80" y="190" class="stage-desc" text-anchor="middle" fill="#ffffff" font-size="9">reject &gt; escalate</text>
+      <text x="80" y="203" class="stage-desc" text-anchor="middle" fill="#ffffff" font-size="9">&gt; flag &gt; approve</text>
+    </g>
+
+    <!-- Arrow to Act -->
+    <path d="M 1165 190 L 1200 190" stroke="#4b5563" stroke-width="2" marker-end="url(#a)"/>
+
+    <!-- Stage 6: Act -->
+    <g transform="translate(1200, 80)">
+      <rect width="140" height="220" rx="6" fill="#1a2332"/>
+      <text x="70" y="22" class="stage-num" text-anchor="middle" fill="#ffffff" opacity="0.7">STAGE 06</text>
+      <text x="70" y="44" class="stage-title" text-anchor="middle" fill="#ffffff">Act</text>
+      <line x1="20" y1="58" x2="120" y2="58" stroke="#ffffff" opacity="0.3" stroke-width="1"/>
+
+      <text x="70" y="80" class="stage-desc" text-anchor="middle" fill="#ffffff">Export output</text>
+      <text x="70" y="102" class="stage-desc" text-anchor="middle" fill="#ffffff">Notify</text>
+      <text x="70" y="124" class="stage-desc" text-anchor="middle" fill="#ffffff">Archive</text>
+      <text x="70" y="146" class="stage-desc" text-anchor="middle" fill="#ffffff">Trace</text>
+      <text x="70" y="168" class="stage-desc" text-anchor="middle" fill="#ffffff" opacity="0.8">queryable</text>
+      <text x="70" y="190" class="stage-desc" text-anchor="middle" fill="#ffffff" opacity="0.8">run record</text>
+    </g>
+  </g>
+
+  <!-- HITL points legend -->
+  <g transform="translate(60, 500)">
+    <rect width="1280" height="150" rx="6" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+
+    <text x="20" y="28" class="section-label">HUMAN-IN-THE-LOOP CHECKPOINTS</text>
+
+    <!-- HITL 1 -->
+    <g transform="translate(20, 50)">
+      <circle cx="10" cy="10" r="8" fill="#c78a3c"/>
+      <text x="12" y="14" font-size="10" fill="#ffffff" font-weight="700" text-anchor="middle">1</text>
+      <text x="30" y="13" class="legend-label">After Classification</text>
+      <text x="30" y="32" class="legend-text">Triggered when classification confidence &lt; hitl_threshold. Human picks the correct</text>
+      <text x="30" y="48" class="legend-text">document type manually from a candidate list. Pipeline resumes with that type.</text>
+    </g>
+
+    <!-- HITL 2 -->
+    <g transform="translate(500, 50)">
+      <circle cx="10" cy="10" r="8" fill="#c78a3c"/>
+      <text x="12" y="14" font-size="10" fill="#ffffff" font-weight="700" text-anchor="middle">2</text>
+      <text x="30" y="13" class="legend-label">After Correction Loop Exhaustion (read-only)</text>
+      <text x="30" y="32" class="legend-text">Triggered when correction retries are all used up. LLM reads the full trace and</text>
+      <text x="30" y="48" class="legend-text">produces a diagnostic suggestion. Human reads it, makes the final call.</text>
+    </g>
+
+    <!-- Other key patterns -->
+    <text x="20" y="100" class="section-label">DATA TRAVELING THROUGH THE PIPELINE</text>
+    <text x="20" y="125" class="legend-text">Confidence budget starts at 1.0. Degrades on warnings · low OCR · layout uncertainty · corrections applied.</text>
+    <text x="20" y="141" class="legend-text">Every field carries source citation (region + OCR confidence + LLM confidence). Multi-page docs fully abstracted downstream.</text>
+  </g>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
+    </marker>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c78a3c"/>
+    </marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+</svg>

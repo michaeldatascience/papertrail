@@ -1,0 +1,17 @@
+{
+  "mode": "schema",
+  "vision_enabled": true,
+  "elements": [
+    { "name": "payee_name", "type": "string", "critical": true, "description": "Pay to the order of" },
+    { "name": "amount_figures", "type": "decimal", "critical": true, "description": "Amount in numerals" },
+    { "name": "amount_words", "type": "string", "critical": true, "description": "Amount in words" },
+    { "name": "date", "type": "date", "critical": true, "description": "Date on the cheque (DD/MM/YYYY)" },
+    { "name": "account_number", "type": "string", "critical": false, "description": "Account number from MICR or printed" },
+    { "name": "ifsc_code", "type": "string", "critical": false, "description": "IFSC code of the bank branch" },
+    { "name": "bank_name", "type": "string", "critical": false, "description": "Name of the issuing bank" },
+    { "name": "cheque_number", "type": "string", "critical": false, "description": "Cheque serial number from MICR" },
+    { "name": "micr_code", "type": "string", "critical": false, "description": "Full MICR code line" },
+    { "name": "is_crossed", "type": "boolean", "critical": false, "description": "Whether the cheque has crossing marks" },
+    { "name": "has_signature", "type": "boolean", "critical": true, "description": "Whether a signature is present" }
+  ]
+}
