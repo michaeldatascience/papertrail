@@ -53,3 +53,8 @@ package-lock.json
 # Byte-compiled
 *.pyc
 nul
+
+# pi agent session artifacts
+.pi/
+pi-session-*.html
+
