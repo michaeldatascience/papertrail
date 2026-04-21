@@ -10,6 +10,9 @@ from pathlib import Path
 from papertrail.models.pipeline_state import PipelineState
 from papertrail.observability.logging import emit
 from papertrail.orchestration.graph import build_graph
+from papertrail.playbooks.loader import PlaybookLoader
+from papertrail.playbooks.repository import PlaybookRepository
+from papertrail.config.loader import get_settings # For BLOB_STORAGE_PATH
 
 
 def _generate_run_uid(playbook_slug: str, file_hash: str) -> str:
@@ -30,6 +33,8 @@ class PipelineRunner:
 
     def __init__(self):
         self._graph = build_graph().compile()
+        self._playbook_repository = PlaybookRepository(Path(get_settings().playbooks_seed_path)) # Assume playbooks_seed_path is configured
+        self._playbook_loader = PlaybookLoader(self._playbook_repository)
 
     async def run(
         self,
@@ -46,17 +51,16 @@ class PipelineRunner:
         file_hash = _compute_file_hash(file_path)
         run_uid = _generate_run_uid(playbook_slug, file_hash)
 
+        # Load the actual playbook configuration
+        loaded_playbook = await self._playbook_loader.load(playbook_slug, playbook_version)
+
         # Initialize state
         initial_state: PipelineState = {
             "run_id": run_uid,  # Using run_uid as run_id for stub
             "run_uid": run_uid,
-            "playbook_id": "",
-            "playbook": {
-                "meta": {"document_type": playbook_slug},
-                "classify": {"hitl_threshold": 0.6},
-                "validate": {"correction": {"max_attempts": 3}},
-            },
-            "input_file_uri": str(path.resolve()),
+            "playbook_id": loaded_playbook.slug, # Use loaded playbook's ID/slug
+            "playbook": loaded_playbook.model_dump(), # Store the full merged playbook
+            "input_file_uri": f"local://{path.resolve()}",
             "input_file_hash": file_hash,
             "input_file_mime": self._guess_mime(path),
             "preupload_result": None,

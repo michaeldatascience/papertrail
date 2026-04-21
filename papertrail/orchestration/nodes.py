@@ -4,31 +4,7 @@ from __future__ import annotations
 
 from papertrail.models.pipeline_state import PipelineState
 from papertrail.observability.logging import emit
-
-
-async def preupload_node(state: PipelineState) -> PipelineState:
-    """Pre-upload checks: file integrity, format, size, blur, resolution."""
-    run_id = state.get("run_id", "unknown")
-    await emit(run_id, "preupload", "stage_enter")
-
-    try:
-        # TODO: Implement real checks (file integrity, format, size, blur, resolution)
-        state["preupload_result"] = {
-            "passed": True,
-            "checks": {
-                "file_integrity": {"passed": True},
-                "format": {"passed": True},
-                "size": {"passed": True},
-            },
-            "warnings": [],
-        }
-        await emit(run_id, "preupload", "stage_exit")
-    except Exception as e:
-        state["error"] = str(e)
-        state["failed_stage"] = "preupload"
-        await emit(run_id, "preupload", "stage_failed", level="error", error=str(e))
-
-    return state
+from papertrail.passes.preupload import preupload_node
 
 
 async def classify_node(state: PipelineState) -> PipelineState:
