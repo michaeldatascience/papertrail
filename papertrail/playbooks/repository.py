@@ -2,42 +2,60 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 class PlaybookNotFoundError(Exception):
+    """Raised when a playbook or playbook part is not found."""
     pass
 
-# --- Temporary File-based Playbook Repository (to be replaced by DB repo) ---
 
 class PlaybookRepository:
-    def __init__(self, seed_path: Path):
-        self._seed_path = seed_path
-
-    async def get_playbook_config_parts(self, slug: str, version: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
-        """Loads playbook config JSON parts from the filesystem for a given slug/version.
-        Returns a dict like {"meta": {...}, "classify": {...}, ...}
+    def __init__(self, playbooks_base_path: Path):
         """
-        # For this stub, version is ignored and we just load the latest from the folder
-        playbook_dir = self._seed_path / slug
-        if not playbook_dir.is_dir():
-            raise PlaybookNotFoundError(f"Playbook directory not found: {playbook_dir}")
+        Initializes the PlaybookRepository.
+        Args:
+            playbooks_base_path: The root directory where playbooks are stored (e.g., Path("./playbooks")).
+        """
+        self._playbooks_base_path = playbooks_base_path
+        if not self._playbooks_base_path.is_dir():
+            raise ValueError(f"Playbooks base path '{playbooks_base_path}' is not a valid directory.")
 
-        config_parts: Dict[str, Dict[str, Any]] = {}
-        for config_file in playbook_dir.glob("*.json"):
-            config_type = config_file.stem  # e.g., 'meta', 'classify'
-            try:
-                with open(config_file, "r") as f:
-                    config_parts[config_type] = json.load(f)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Invalid JSON in {config_file}: {e}")
+    def _get_playbook_dir_path(self, slug: str) -> Path:
+        """Helper to get the base directory for a playbook."""
+        return self._playbooks_base_path / slug
+
+    def get_raw_section_config(self, slug: str, section_name: str) -> Dict[str, Any]:
+        """
+        Retrieves the raw JSON configuration for a specific section of a playbook.
         
-        # For testing inheritance, manually get extends_slug from meta.json if present
-        # This would normally come from the DB row for the playbook.
-        meta_config = config_parts.get("meta", {})
-        if meta_config and "document_type" in meta_config and meta_config["document_type"] != "base":
-            # This is a heuristic for our simple seed structure: if it's not base, it extends base
-            # In a real DB setup, `extends_playbook_id` would determine this.
-            meta_config["extends_slug"] = "_base"
-
-        return config_parts
+        Args:
+            slug: The playbook identifier (e.g., "indian_cheque", "_base").
+            section_name: The name of the section (e.g., "meta", "classify").
+            
+        Returns:
+            A dictionary representing the raw JSON content of the section.
+            Returns an empty dictionary if the section file is not found.
+            
+        Raises:
+            PlaybookNotFoundError: If the playbook directory itself doesn't exist
+                                   or if JSON is invalid.
+        """
+        playbook_dir = self._get_playbook_dir_path(slug)
+        if not playbook_dir.is_dir():
+            raise PlaybookNotFoundError(f"Playbook directory '{slug}' not found at {playbook_dir}")
+        
+        section_path = playbook_dir / f"{section_name}.json"
+        
+        if not section_path.is_file():
+            # If a section file doesn't exist, it means the playbook doesn't
+            # override that section, so we return an empty dict for merging.
+            return {}
+            
+        try:
+            with open(section_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except json.JSONDecodeError as e:
+            raise PlaybookNotFoundError(f"Invalid JSON in {section_path}: {e}")
+        except Exception as e:
+            raise PlaybookNotFoundError(f"Error reading {section_path}: {e}")
 

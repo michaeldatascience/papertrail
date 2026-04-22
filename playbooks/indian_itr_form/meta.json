@@ -1,0 +1,6 @@
+{
+  "document_type": "indian_itr_form",
+  "display_name": "Indian ITR Form",
+  "description": "Processing pipeline for Indian Income Tax Return forms.",
+  "extends_slug": "_base"
+}

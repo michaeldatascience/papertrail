@@ -1,0 +1,11 @@
+{
+  "prompt_template": "classify_document",
+  "preview_chars": 800,
+  "hitl_threshold": 0.6,
+  "candidates": [
+    {
+      "label": "unknown",
+      "description": "Document type could not be determined"
+    }
+  ]
+}

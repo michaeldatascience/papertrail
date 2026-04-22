@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     log_level: str = "INFO"
     blob_storage_path: str = "./data/blobs"
-    playbooks_seed_path: str = "./playbooks_seed"
+    playbooks_path: str = "./playbooks"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

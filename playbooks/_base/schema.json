@@ -1,0 +1,13 @@
+{
+  "mode": "schema",
+  "prompt_template": "extract_schema",
+  "vision_enabled": false,
+  "elements": [
+    {
+      "name": "document_id",
+      "type": "string",
+      "critical": false,
+      "description": "Unique identifier for this document"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "document_type": "base",
+  "display_name": "Base Document Type",
+  "description": "Base configuration for all document types - all playbooks inherit from this",
+  "engines": {
+    "layout": "docling",
+    "text_extraction": "pypdf",
+    "ocr": "paddleocr",
+    "ocr_fallback": "tesseract",
+    "tables": "camelot",
+    "vision": "openai",
+    "always_fallback": false
+  },
+  "preupload": {
+    "checks": {
+      "blur": {
+        "enabled": true,
+        "threshold": 100
+      },
+      "resolution": {
+        "enabled": true,
+        "min_dpi": 150
+      },
+      "pages": {
+        "enabled": true,
+        "max_pages": 50
+      }
+    }
+  }
+}

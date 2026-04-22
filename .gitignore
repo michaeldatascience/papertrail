@@ -54,7 +54,4 @@ package-lock.json
 *.pyc
 nul
 
-# pi agent session artifacts
-.pi/
-pi-session-*.html
 

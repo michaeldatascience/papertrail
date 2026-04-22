@@ -1,0 +1,6 @@
+{
+  "document_type": "indian_bank_statement",
+  "display_name": "Indian Bank Statement",
+  "description": "Processing pipeline for Indian bank statements.",
+  "extends_slug": "_base"
+}

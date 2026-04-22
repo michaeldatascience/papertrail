@@ -1,0 +1,6 @@
+{
+  "document_type": "indian_salary_slip",
+  "display_name": "Indian Salary Slip",
+  "description": "Processing pipeline for Indian employee salary slips.",
+  "extends_slug": "_base"
+}

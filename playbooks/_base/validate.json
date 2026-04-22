@@ -2,11 +2,11 @@
   "correction": {
     "enabled": true,
     "max_attempts": 3,
-    "hint_template": "correct_hint.txt"
+    "hint_template": "correct_field"
   },
   "suggestion": {
     "enabled": true,
-    "template": "suggest.txt"
+    "template": "suggest_correction"
   },
   "scoring": {
     "confidence_budget_start": 1.0,

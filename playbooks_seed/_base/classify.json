@@ -1,6 +1,0 @@
-{
-  "prompt_template": "classify_default.txt",
-  "preview_chars": 800,
-  "hitl_threshold": 0.6,
-  "candidates": []
-}

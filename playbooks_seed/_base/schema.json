@@ -1,6 +1,0 @@
-{
-  "mode": "schema",
-  "prompt_template": "extract_schema.txt",
-  "vision_enabled": false,
-  "elements": []
-}
