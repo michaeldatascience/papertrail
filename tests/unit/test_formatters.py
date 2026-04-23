@@ -10,13 +10,13 @@ from papertrail.cli.formatters import print_summary, print_table
 def test_print_summary_basic(sample_pipeline_state, capsys):
     state = sample_pipeline_state
     state["classification"] = {"type": "indian_cheque", "confidence": 0.95}
-    state["pass_d_output"] = {"aggregate_confidence": 0.88}
+    state["validation_result"] = {"aggregate_confidence": 0.88}
     state["decision_result"] = {
         "action": "approve",
         "enriched_data": {},
         "reasons": [],
     }
-    state["pass_c_output"] = {
+    state["extraction_output"] = {
         "elements": [
             {"name": "payee_name", "value": "Test User"},
         ]

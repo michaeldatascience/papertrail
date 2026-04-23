@@ -2,13 +2,24 @@
 
 from __future__ import annotations
 
-import structlog
+import logging
+from typing import Any
+
+try:
+    import structlog
+except ModuleNotFoundError:  # pragma: no cover - environment fallback
+    structlog = None  # type: ignore[assignment]
+
 from papertrail.config.loader import get_settings
 
 
 def configure_logging() -> None:
-    """Configure structlog for JSON output."""
+    """Configure structured logging when structlog is available."""
     settings = get_settings()
+    if structlog is None:
+        logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO))
+        return
+
     structlog.configure(
         processors=[
             structlog.contextvars.merge_contextvars,
@@ -19,7 +30,7 @@ def configure_logging() -> None:
             structlog.processors.JSONRenderer(),
         ],
         wrapper_class=structlog.make_filtering_bound_logger(
-            getattr(structlog, settings.log_level.upper(), structlog.INFO)  # type: ignore
+            getattr(structlog, settings.log_level.upper(), structlog.INFO)  # type: ignore[attr-defined]
         ),
         context_class=dict,
         logger_factory=structlog.PrintLoggerFactory(),
@@ -27,7 +38,10 @@ def configure_logging() -> None:
     )
 
 
-logger = structlog.get_logger()
+if structlog is None:
+    logger = logging.getLogger("papertrail")
+else:
+    logger = structlog.get_logger()
 
 
 async def emit(
@@ -35,13 +49,17 @@ async def emit(
     stage: str,
     event: str,
     level: str = "info",
-    trace_repo=None,
-    **payload,
+    trace_repo: Any = None,
+    **payload: Any,
 ) -> None:
-    """Emit an event to structlog and optionally to the trace_events table."""
-    bound = logger.bind(run_id=run_id, stage=stage, event=event)
-    log_method = getattr(bound, level, bound.info)
-    log_method(event, **payload)
+    """Emit an event to structured logging and optionally to the trace_events table."""
+    if structlog is None:
+        message = {"run_id": run_id, "stage": stage, "event": event, **payload}
+        getattr(logger, level if hasattr(logger, level) else "info")(message)
+    else:
+        bound = logger.bind(run_id=run_id, stage=stage, event=event)
+        log_method = getattr(bound, level, bound.info)
+        log_method(event, **payload)
 
     if trace_repo is not None:
         await trace_repo.emit(

@@ -1,0 +1,16 @@
+You are validating the payee name extracted from an Indian cheque.
+
+Payee name: {value}
+
+Check whether this looks like a valid payee name. Consider:
+- It should be a plausible person or organization name
+- It should not contain random characters or obvious OCR artifacts
+- Common abbreviations (Mr, Mrs, Dr, M/s) are acceptable
+- "Self" or "SELF" is a valid payee
+
+Respond with:
+{
+  "passed": true | false,
+  "confidence": <0.0 to 1.0>,
+  "reason": "<brief explanation>"
+}

@@ -12,11 +12,11 @@ def print_summary(state: dict) -> None:
     run_uid = state.get("run_uid", "unknown")
     decision_result = state.get("decision_result", {})
     classification = state.get("classification", {})
-    pass_d = state.get("pass_d_output", {})
+    validation = state.get("validation_result", {})
     warnings = state.get("warnings", [])
 
     decision = decision_result.get("action", "unknown") if decision_result else "unknown"
-    confidence = pass_d.get("aggregate_confidence", 0.0) if pass_d else 0.0
+    confidence = validation.get("aggregate_confidence", 0.0) if validation else 0.0
     doc_type = classification.get("type", "unknown") if classification else "unknown"
 
     click.echo()
@@ -31,8 +31,8 @@ def print_summary(state: dict) -> None:
     click.echo(f"Warnings: {len(warnings)}")
 
     # Extracted elements
-    pass_c = state.get("pass_c_output", {})
-    elements = pass_c.get("elements", []) if pass_c else []
+    extraction = state.get("extraction_output", {})
+    elements = extraction.get("elements", []) if extraction else []
     if elements:
         click.echo()
         click.secho("Extracted:", bold=True)

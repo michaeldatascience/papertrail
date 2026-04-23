@@ -1,0 +1,60 @@
+{
+  "conditions": [
+    {
+      "name": "missing_signature",
+      "expression_type": "expression",
+      "expression": "elements.has_signature == false",
+      "action": "reject",
+      "reason": "Cheque has no signature",
+      "order": 10,
+      "enabled": true
+    },
+    {
+      "name": "stale_cheque",
+      "expression_type": "expression",
+      "expression": "days_since(elements.date) > 90",
+      "action": "flag",
+      "reason": "Cheque is older than 90 days (stale)",
+      "order": 20,
+      "enabled": true
+    },
+    {
+      "name": "post_dated",
+      "expression_type": "expression",
+      "expression": "days_until(elements.date) > 0",
+      "action": "flag",
+      "reason": "Cheque is post-dated",
+      "order": 30,
+      "enabled": true
+    },
+    {
+      "name": "high_value",
+      "expression_type": "expression",
+      "expression": "elements.amount_figures > 1000000",
+      "action": "flag",
+      "reason": "High-value cheque (over 10 lakh)",
+      "order": 40,
+      "enabled": true
+    },
+    {
+      "name": "low_confidence",
+      "expression_type": "expression",
+      "expression": "run.aggregate_confidence < 0.7",
+      "action": "escalate",
+      "reason": "Overall extraction confidence is below threshold",
+      "order": 50,
+      "enabled": true
+    }
+  ],
+  "transformations": [
+    {
+      "name": "lookup_ifsc",
+      "output_binding": "enrichment.bank_branch",
+      "expression_type": "tool_call",
+      "tool_name": "ifsc_lookup",
+      "tool_arguments": { "input": "elements.ifsc_code" },
+      "order": 10,
+      "enabled": true
+    }
+  ]
+}

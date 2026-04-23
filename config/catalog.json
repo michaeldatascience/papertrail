@@ -1,0 +1,118 @@
+{
+  "version": "v2",
+  "node_types": [
+    "preflight",
+    "preupload",
+    "classify",
+    "layout_extract",
+    "text_extract",
+    "schema_extract",
+    "validate",
+    "correct",
+    "decide",
+    "postprocess"
+  ],
+  "engines": [
+    {
+      "name": "docling",
+      "type": "layout",
+      "implementation": "papertrail.engines.layout.docling:DoclingLayoutEngine",
+      "config": {}
+    },
+    {
+      "name": "pymupdf",
+      "type": "text",
+      "implementation": "papertrail.engines.text.pymupdf:PyMuPDFTextEngine",
+      "config": {}
+    },
+    {
+      "name": "paddleocr",
+      "type": "ocr",
+      "implementation": "papertrail.engines.ocr.paddleocr:PaddleOCREngine",
+      "config": {}
+    },
+    {
+      "name": "tesseract",
+      "type": "ocr",
+      "implementation": "papertrail.engines.ocr.tesseract:TesseractOCREngine",
+      "config": {}
+    },
+    {
+      "name": "pdfplumber",
+      "type": "table",
+      "implementation": "papertrail.engines.tables.pdfplumber:PdfPlumberTableEngine",
+      "config": {}
+    },
+    {
+      "name": "claude_vision",
+      "type": "vision",
+      "implementation": "papertrail.engines.vision.claude:ClaudeVisionEngine",
+      "config": {}
+    }
+  ],
+  "validation_rule_types": [
+    { "name": "required", "parameters_schema": {} },
+    { "name": "non_empty", "parameters_schema": {} },
+    { "name": "regex", "parameters_schema": { "pattern": "string" } },
+    { "name": "positive_decimal", "parameters_schema": {} },
+    { "name": "max_value", "parameters_schema": { "max": "number" } },
+    { "name": "min_value", "parameters_schema": { "min": "number" } },
+    { "name": "date_format", "parameters_schema": { "format": "string" } },
+    { "name": "date_range", "parameters_schema": { "min": "string", "max": "string" } },
+    { "name": "equals", "parameters_schema": { "value": "any" } },
+    { "name": "cross_field_sum", "parameters_schema": { "fields": "list", "expected": "number" } },
+    { "name": "cross_field_equals", "parameters_schema": { "left": "string", "right": "string" } },
+    { "name": "soft_llm", "parameters_schema": { "prompt_template": "string" } }
+  ],
+  "business_rule_expression_types": [
+    { "name": "expression", "parameters_schema": {} },
+    { "name": "threshold", "parameters_schema": {} },
+    { "name": "lookup", "parameters_schema": {} },
+    { "name": "tool_call", "parameters_schema": {} },
+    { "name": "llm_condition", "parameters_schema": {} }
+  ],
+  "tools": [
+    {
+      "name": "ifsc_lookup",
+      "implementation": "papertrail.tools.ifsc:IFSCLookupTool",
+      "input_schema": {},
+      "output_schema": {},
+      "config": {}
+    },
+    {
+      "name": "export_json",
+      "implementation": "papertrail.tools.export:ExportJSONTool",
+      "input_schema": {},
+      "output_schema": {},
+      "config": {}
+    },
+    {
+      "name": "export_csv",
+      "implementation": "papertrail.tools.export:ExportCSVTool",
+      "input_schema": {},
+      "output_schema": {},
+      "config": {}
+    },
+    {
+      "name": "notify",
+      "implementation": "papertrail.tools.notify:NotificationTool",
+      "input_schema": {},
+      "output_schema": {},
+      "config": {}
+    }
+  ],
+  "prompt_templates": [
+    { "name": "classify", "variables": ["preview_chars", "document_preview", "candidates_formatted"] },
+    { "name": "extract_schema", "variables": ["document_type", "region_text_formatted", "full_page_fallback_section", "elements_formatted"] },
+    { "name": "correct_hint", "variables": ["document_type", "attempt_number", "element_name", "current_value", "failure_reason", "other_elements_formatted", "cross_field_hints", "region_text"] },
+    { "name": "suggest", "variables": ["document_type", "max_attempts", "trace_formatted", "failed_elements_formatted"] },
+    { "name": "validate_soft_default", "variables": ["element_name", "value", "context", "validation_question"] }
+  ],
+  "supported_mimes": ["application/pdf", "image/jpeg", "image/png", "image/tiff"],
+  "runtime_limits": {
+    "max_file_size_bytes": 52428800,
+    "max_correction_iterations": 3,
+    "stage_timeout_seconds": 600,
+    "overall_run_timeout_seconds": 3600
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "rules": [
+    { "name": "payee_name_required", "rule_type": "required", "targets": ["payee_name"], "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "payee_name_non_empty", "rule_type": "non_empty", "targets": ["payee_name"], "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "amount_figures_required", "rule_type": "required", "targets": ["amount_figures"], "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "amount_figures_positive", "rule_type": "positive_decimal", "targets": ["amount_figures"], "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "amount_figures_max", "rule_type": "max_value", "targets": ["amount_figures"], "parameters": { "max": 100000 }, "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "amount_words_required", "rule_type": "required", "targets": ["amount_words"], "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "amount_words_non_empty", "rule_type": "non_empty", "targets": ["amount_words"], "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "date_required", "rule_type": "required", "targets": ["date"], "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "date_format", "rule_type": "date_format", "targets": ["date"], "parameters": { "format": "DD/MM/YYYY" }, "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "date_not_future", "rule_type": "date_range", "targets": ["date"], "parameters": { "max": "today" }, "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "ifsc_code_regex", "rule_type": "regex", "targets": ["ifsc_code"], "parameters": { "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$" }, "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "has_signature_true", "rule_type": "equals", "targets": ["has_signature"], "parameters": { "value": true }, "execution_mode": "hard", "severity": "error", "stop_on_failure": true },
+    { "name": "payee_name_soft", "rule_type": "soft_llm", "targets": ["payee_name"], "execution_mode": "soft", "prompt_template": "validate_payee_name.txt", "severity": "warning", "stop_on_failure": false },
+    { "name": "amount_consistency", "rule_type": "soft_llm", "targets": ["amount_figures", "amount_words"], "execution_mode": "soft", "prompt_template": "validate_amount_consistency.txt", "severity": "warning", "stop_on_failure": false }
+  ]
+}

@@ -9,23 +9,27 @@ class PipelineState(TypedDict, total=False):
     # Identity
     run_id: str
     run_uid: str
+    project_id: str
     playbook_id: str
 
-    # Playbook (merged with _base)
-    playbook: dict[str, Any]
+    # Compiled execution plan
+    execution_plan: dict[str, Any] | None
+
+    # Legacy compatibility payloads (temporary)
+    playbook: dict[str, Any] | None
 
     # Input
     input_file_uri: str
     input_file_hash: str
     input_file_mime: str
 
-    # Pass results
+    # Stage results
     preupload_result: dict[str, Any] | None
     classification: dict[str, Any] | None
-    pass_a_output: dict[str, Any] | None
-    pass_b_output: dict[str, Any] | None
-    pass_c_output: dict[str, Any] | None
-    pass_d_output: dict[str, Any] | None
+    layout_output: dict[str, Any] | None
+    text_output: dict[str, Any] | None
+    extraction_output: dict[str, Any] | None
+    validation_result: dict[str, Any] | None
 
     # Correction loop state
     correction_attempts: int
@@ -33,6 +37,7 @@ class PipelineState(TypedDict, total=False):
 
     # Decision
     decision_result: dict[str, Any] | None
+    postprocess_result: dict[str, Any] | None
 
     # HITL
     awaiting_hitl: bool

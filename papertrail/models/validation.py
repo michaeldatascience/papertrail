@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RuleResult(BaseModel):
@@ -20,8 +20,8 @@ class ElementValidationResult(BaseModel):
     """Validation result for a single element."""
 
     element_name: str
-    hard_results: list[RuleResult] = []
-    soft_results: list[RuleResult] = []
+    hard_results: list[RuleResult] = Field(default_factory=list)
+    soft_results: list[RuleResult] = Field(default_factory=list)
     passed: bool = True
 
 
@@ -29,7 +29,7 @@ class ValidationResult(BaseModel):
     """Aggregate validation result from Pass D."""
 
     passed: bool
-    element_results: list[ElementValidationResult] = []
-    cross_field_results: list[RuleResult] = []
+    element_results: list[ElementValidationResult] = Field(default_factory=list)
+    cross_field_results: list[RuleResult] = Field(default_factory=list)
     aggregate_confidence: float = 1.0
-    failed_elements: list[str] = []
+    failed_elements: list[str] = Field(default_factory=list)

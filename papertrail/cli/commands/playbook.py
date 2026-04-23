@@ -19,7 +19,6 @@ def playbook_list():
     # TODO: Query database for playbooks
     headers = ["SLUG", "VERSION", "NAME", "ACTIVE"]
     rows = [
-        ["_base", "1.0", "Base", "yes"],
         ["indian_cheque", "1.0", "Indian Cheque", "yes"],
         ["indian_bank_statement", "1.0", "Indian Bank Statement", "yes"],
         ["indian_salary_slip", "1.0", "Indian Salary Slip", "yes"],

@@ -11,10 +11,8 @@ def route_after_classify(state: PipelineState) -> str:
     if not classification:
         return "error"
 
-    playbook = state.get("playbook", {})
-    hitl_threshold = (
-        playbook.get("classify", {}).get("hitl_threshold", 0.6)
-    )
+    plan = state.get("execution_plan", {})
+    hitl_threshold = plan.get("classification", {}).get("confidence_threshold", 0.6)
 
     if classification.get("confidence", 0) < hitl_threshold:
         return "hitl"
@@ -22,20 +20,16 @@ def route_after_classify(state: PipelineState) -> str:
 
 
 def route_after_validation(state: PipelineState) -> str:
-    """Route after Pass D validation: proceed, retry, or exhausted."""
-    result = state.get("pass_d_output")
+    """Route after validation: proceed, retry, or exhausted."""
+    result = state.get("validation_result")
     if not result:
         return "error"
 
     if result.get("passed", False):
         return "proceed"
 
-    playbook = state.get("playbook", {})
-    max_attempts = (
-        playbook.get("validate", {})
-        .get("correction", {})
-        .get("max_attempts", 3)
-    )
+    plan = state.get("execution_plan", {})
+    max_attempts = plan.get("correction", {}).get("max_retries", 3)
     current_attempts = state.get("correction_attempts", 0)
 
     if current_attempts >= max_attempts:

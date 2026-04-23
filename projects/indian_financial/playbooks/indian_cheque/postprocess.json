@@ -1,0 +1,19 @@
+{
+  "output_format": "json",
+  "fields_to_include": [
+    "payee_name",
+    "amount_figures",
+    "amount_words",
+    "date",
+    "account_number",
+    "ifsc_code",
+    "bank_name",
+    "cheque_number",
+    "micr_code",
+    "is_crossed",
+    "has_signature"
+  ],
+  "include_trace": true,
+  "success_tool_calls": ["export_json"],
+  "failure_tool_calls": ["notify"]
+}

@@ -1,8 +1,6 @@
-"""LangGraph state machine definition."""
+"""Internal pipeline executor for the current V2 transition."""
 
 from __future__ import annotations
-
-from langgraph.graph import END, StateGraph
 
 from papertrail.models.pipeline_state import PipelineState
 from papertrail.orchestration.nodes import (
@@ -10,68 +8,90 @@ from papertrail.orchestration.nodes import (
     classify_node,
     correction_node,
     decide_node,
-    pass_a_node,
-    pass_b_node,
-    pass_c_node,
-    pass_d_node,
+    layout_extract_node,
     preupload_node,
+    schema_extract_node,
     suggestion_node,
+    text_extract_node,
+    validate_node,
 )
-from papertrail.orchestration.routing import (
-    route_after_classify,
-    route_after_validation,
-)
+from papertrail.orchestration.routing import route_after_classify, route_after_validation
 
 
-def build_graph() -> StateGraph:
-    """Build and return the compiled pipeline graph."""
-    g = StateGraph(PipelineState)
+class PipelineExecutor:
+    """A tiny compiled executor that runs the current stage sequence."""
 
-    # Register nodes
-    g.add_node("preupload", preupload_node)
-    g.add_node("classify", classify_node)
-    g.add_node("pass_a", pass_a_node)
-    g.add_node("pass_b", pass_b_node)
-    g.add_node("pass_c", pass_c_node)
-    g.add_node("pass_d", pass_d_node)
-    g.add_node("correction", correction_node)
-    g.add_node("suggestion", suggestion_node)
-    g.add_node("decide", decide_node)
-    g.add_node("act", act_node)
+    async def ainvoke(self, state: PipelineState) -> PipelineState:
+        state = await preupload_node(state)
+        if state.get("error"):
+            return state
 
-    # Set entry point
-    g.set_entry_point("preupload")
+        state = await classify_node(state)
+        route = route_after_classify(state)
+        if route == "hitl":
+            state["awaiting_hitl"] = True
+            state["hitl_checkpoint_type"] = "classification_low_confidence"
+            state["hitl_context"] = {
+                "summary": "Classification confidence fell below the compiled threshold.",
+                "suggestions": [],
+            }
+            return state
+        if route == "error":
+            state["failed_stage"] = state.get("failed_stage") or "classify"
+            return state
 
-    # Linear edges
-    g.add_edge("preupload", "classify")
+        state = await layout_extract_node(state)
+        if state.get("error"):
+            return state
 
-    # Conditional: after classify
-    g.add_conditional_edges(
-        "classify",
-        route_after_classify,
-        {"proceed": "pass_a", "hitl": END, "error": END},
-    )
+        state = await text_extract_node(state)
+        if state.get("error"):
+            return state
 
-    # Linear extraction pipeline
-    g.add_edge("pass_a", "pass_b")
-    g.add_edge("pass_b", "pass_c")
-    g.add_edge("pass_c", "pass_d")
+        state = await schema_extract_node(state)
+        if state.get("error"):
+            return state
 
-    # Conditional: after validation
-    g.add_conditional_edges(
-        "pass_d",
-        route_after_validation,
-        {"proceed": "decide", "retry": "correction", "exhausted": "suggestion", "error": END},
-    )
+        state = await validate_node(state)
+        if state.get("error"):
+            return state
 
-    # Correction loops back to pass_c
-    g.add_edge("correction", "pass_c")
+        while True:
+            route = route_after_validation(state)
+            if route == "proceed":
+                break
+            if route == "retry":
+                state = await correction_node(state)
+                if state.get("error"):
+                    return state
+                state = await schema_extract_node(state)
+                if state.get("error"):
+                    return state
+                state = await validate_node(state)
+                if state.get("error"):
+                    return state
+                continue
+            if route == "exhausted":
+                state = await suggestion_node(state)
+                return state
+            state["failed_stage"] = state.get("failed_stage") or "validate"
+            return state
 
-    # Suggestion ends (HITL pause)
-    g.add_edge("suggestion", END)
+        state = await decide_node(state)
+        if state.get("error"):
+            return state
 
-    # Decision to action
-    g.add_edge("decide", "act")
-    g.add_edge("act", END)
+        state = await act_node(state)
+        return state
 
-    return g
+
+class PipelineGraph:
+    """Compatibility wrapper that mirrors the old build_graph().compile() API."""
+
+    def compile(self) -> PipelineExecutor:
+        return PipelineExecutor()
+
+
+def build_graph() -> PipelineGraph:
+    """Build the current executor wrapper."""
+    return PipelineGraph()

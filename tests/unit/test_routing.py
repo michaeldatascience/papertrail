@@ -25,25 +25,25 @@ def test_route_after_classify_no_classification(sample_pipeline_state):
 
 def test_route_after_validation_proceed(sample_pipeline_state):
     state = sample_pipeline_state
-    state["pass_d_output"] = {"passed": True}
+    state["validation_result"] = {"passed": True}
     assert route_after_validation(state) == "proceed"
 
 
 def test_route_after_validation_retry(sample_pipeline_state):
     state = sample_pipeline_state
-    state["pass_d_output"] = {"passed": False}
+    state["validation_result"] = {"passed": False}
     state["correction_attempts"] = 0
     assert route_after_validation(state) == "retry"
 
 
 def test_route_after_validation_exhausted(sample_pipeline_state):
     state = sample_pipeline_state
-    state["pass_d_output"] = {"passed": False}
+    state["validation_result"] = {"passed": False}
     state["correction_attempts"] = 3
     assert route_after_validation(state) == "exhausted"
 
 
 def test_route_after_validation_no_result(sample_pipeline_state):
     state = sample_pipeline_state
-    state["pass_d_output"] = None
+    state["validation_result"] = None
     assert route_after_validation(state) == "error"

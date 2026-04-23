@@ -1,27 +1,36 @@
-"""Pipeline node registrations — stub implementations for Week 1."""
+"""Pipeline node registrations for the V2 execution plan."""
 
 from __future__ import annotations
+
+from typing import Any
 
 from papertrail.models.pipeline_state import PipelineState
 from papertrail.observability.logging import emit
 from papertrail.passes.preupload import preupload_node
+from papertrail.validation import validate_execution_plan
+
+
+def _plan(state: PipelineState) -> dict[str, Any]:
+    return state.get("execution_plan", {})
 
 
 async def classify_node(state: PipelineState) -> PipelineState:
-    """Classify document type using LLM."""
+    """Classify document type using the compiled plan."""
     run_id = state.get("run_id", "unknown")
     await emit(run_id, "classify", "stage_enter")
 
     try:
-        # TODO: Implement real LLM classification
-        playbook = state.get("playbook", {})
+        plan = _plan(state)
+        classification = plan.get("classification", {})
         state["classification"] = {
-            "type": playbook.get("meta", {}).get("document_type", "unknown"),
+            "type": plan.get("document_type", "unknown"),
             "confidence": 0.95,
-            "reasoning": "Stub classification — matched playbook document type.",
+            "reasoning": f"Stub classification using compiled plan for {classification.get('candidate_labels', [])}.",
         }
         await emit(
-            run_id, "classify", "classification_result",
+            run_id,
+            "classify",
+            "classification_result",
             type=state["classification"]["type"],
             confidence=state["classification"]["confidence"],
         )
@@ -34,119 +43,133 @@ async def classify_node(state: PipelineState) -> PipelineState:
     return state
 
 
-async def pass_a_node(state: PipelineState) -> PipelineState:
-    """Pass A — Layout analysis via Docling."""
+async def layout_extract_node(state: PipelineState) -> PipelineState:
+    """Layout extraction scaffold driven by the compiled plan."""
     run_id = state.get("run_id", "unknown")
-    await emit(run_id, "pass_a", "stage_enter")
+    await emit(run_id, "layout_extract", "stage_enter")
 
     try:
-        # TODO: Implement Docling layout analysis
-        state["pass_a_output"] = {
+        plan = _plan(state)
+        schema_fields = plan.get("extraction", {}).get("schema", [])
+        state["layout_output"] = {
             "pages": 1,
             "regions": [
-                {"id": "r1", "type": "text", "page": 1, "bbox": [0, 0, 1, 1], "confidence": 0.9}
+                {
+                    "id": "r1",
+                    "type": "text",
+                    "page": 1,
+                    "bbox": [0, 0, 1, 1],
+                    "confidence": 0.9,
+                    "schema_field_count": len(schema_fields),
+                }
             ],
             "confidence": 0.9,
         }
-        await emit(run_id, "pass_a", "stage_exit")
+        await emit(run_id, "layout_extract", "stage_exit")
     except Exception as e:
         state["error"] = str(e)
-        state["failed_stage"] = "pass_a"
-        await emit(run_id, "pass_a", "stage_failed", level="error", error=str(e))
+        state["failed_stage"] = "layout_extract"
+        await emit(run_id, "layout_extract", "stage_failed", level="error", error=str(e))
 
     return state
 
 
-async def pass_b_node(state: PipelineState) -> PipelineState:
-    """Pass B — Raw text/OCR extraction via engine dispatcher."""
+async def text_extract_node(state: PipelineState) -> PipelineState:
+    """Text/OCR extraction scaffold driven by the compiled plan."""
     run_id = state.get("run_id", "unknown")
-    await emit(run_id, "pass_b", "stage_enter")
+    await emit(run_id, "text_extract", "stage_enter")
 
     try:
-        # TODO: Implement engine dispatcher for raw extraction
-        state["pass_b_output"] = {
+        plan = _plan(state)
+        engine_routing = plan.get("engine_routing", {})
+        state["text_output"] = {
             "regions": [
                 {
                     "region_id": "r1",
                     "text": "Stub extracted text from region r1",
                     "confidence": 0.85,
-                    "engine_used": "stub",
+                    "engine_used": engine_routing.get("ocr", {}).get("name", "stub"),
                 }
             ],
             "full_page_ocr": None,
         }
-        await emit(run_id, "pass_b", "stage_exit")
+        await emit(run_id, "text_extract", "stage_exit")
     except Exception as e:
         state["error"] = str(e)
-        state["failed_stage"] = "pass_b"
-        await emit(run_id, "pass_b", "stage_failed", level="error", error=str(e))
+        state["failed_stage"] = "text_extract"
+        await emit(run_id, "text_extract", "stage_failed", level="error", error=str(e))
 
     return state
 
 
-async def pass_c_node(state: PipelineState) -> PipelineState:
-    """Pass C — Schema extraction via LLM + Instructor."""
+async def schema_extract_node(state: PipelineState) -> PipelineState:
+    """Schema extraction scaffold driven by the compiled plan."""
     run_id = state.get("run_id", "unknown")
-    await emit(run_id, "pass_c", "stage_enter")
+    await emit(run_id, "schema_extract", "stage_enter")
 
     try:
-        # TODO: Implement LLM schema extraction with Instructor
-        state["pass_c_output"] = {
-            "elements": [
+        plan = _plan(state)
+        elements = []
+        for field in plan.get("extraction", {}).get("schema", []):
+            elements.append(
                 {
-                    "name": "stub_field",
-                    "value": "stub_value",
+                    "name": field.get("name", "unknown"),
+                    "value": None,
                     "llm_confidence": 0.9,
                     "ocr_confidence": 0.85,
                     "source_region": "r1",
                 }
-            ],
-            "model_used": "stub",
+            )
+        state["extraction_output"] = {
+            "elements": elements,
+            "model_used": plan.get("llm_routing", {}).get("extract", {}).get("model", "stub"),
             "attempt_number": state.get("correction_attempts", 0),
         }
-        await emit(run_id, "pass_c", "stage_exit")
+        await emit(run_id, "schema_extract", "stage_exit")
     except Exception as e:
         state["error"] = str(e)
-        state["failed_stage"] = "pass_c"
-        await emit(run_id, "pass_c", "stage_failed", level="error", error=str(e))
+        state["failed_stage"] = "schema_extract"
+        await emit(run_id, "schema_extract", "stage_failed", level="error", error=str(e))
 
     return state
 
 
-async def pass_d_node(state: PipelineState) -> PipelineState:
-    """Pass D — Validation (hard rules, soft rules, cross-field checks)."""
+async def validate_node(state: PipelineState) -> PipelineState:
+    """Validation driven by the compiled execution plan."""
     run_id = state.get("run_id", "unknown")
-    await emit(run_id, "pass_d", "stage_enter")
+    await emit(run_id, "validate", "stage_enter")
 
     try:
-        # TODO: Implement validation runner
-        state["pass_d_output"] = {
-            "passed": True,
-            "element_results": [],
-            "cross_field_results": [],
-            "aggregate_confidence": 0.88,
-            "failed_elements": [],
-        }
-        await emit(run_id, "pass_d", "stage_exit")
+        plan = _plan(state)
+        extracted_elements = (state.get("extraction_output") or {}).get("elements", [])
+        validation_result = validate_execution_plan(plan, extracted_elements)
+        state["validation_result"] = validation_result.model_dump()
+        await emit(
+            run_id,
+            "validate",
+            "stage_exit",
+            passed=validation_result.passed,
+            failed_elements=validation_result.failed_elements,
+        )
     except Exception as e:
         state["error"] = str(e)
-        state["failed_stage"] = "pass_d"
-        await emit(run_id, "pass_d", "stage_failed", level="error", error=str(e))
+        state["failed_stage"] = "validate"
+        await emit(run_id, "validate", "stage_failed", level="error", error=str(e))
 
     return state
 
 
 async def correction_node(state: PipelineState) -> PipelineState:
-    """Correction loop — targeted hints and re-extraction."""
+    """Correction loop scaffold driven by the compiled plan."""
     run_id = state.get("run_id", "unknown")
     attempt = state.get("correction_attempts", 0) + 1
     await emit(run_id, "correction", "correction_started", attempt=attempt)
 
     try:
-        # TODO: Implement correction with targeted hints
         state["correction_attempts"] = attempt
+        plan = _plan(state)
         history = state.get("correction_history", [])
-        history.append({"attempt": attempt, "status": "stub"})
+        history.append({"attempt": attempt, "status": "stub", "max_retries": plan.get("correction", {}).get("max_retries", 0)})
         state["correction_history"] = history
         await emit(run_id, "correction", "correction_completed", attempt=attempt)
     except Exception as e:
@@ -163,7 +186,6 @@ async def suggestion_node(state: PipelineState) -> PipelineState:
     await emit(run_id, "suggestion", "stage_enter")
 
     try:
-        # TODO: Implement LLM diagnostic suggestion
         state["awaiting_hitl"] = True
         state["hitl_checkpoint_type"] = "correction_exhausted"
         state["hitl_context"] = {
@@ -180,23 +202,21 @@ async def suggestion_node(state: PipelineState) -> PipelineState:
 
 
 async def decide_node(state: PipelineState) -> PipelineState:
-    """Decision engine — evaluate conditions, run transformations, resolve precedence."""
+    """Decision engine scaffold driven by the compiled plan."""
     run_id = state.get("run_id", "unknown")
     await emit(run_id, "decide", "stage_enter")
 
     try:
-        # TODO: Implement decision engine
+        plan = _plan(state)
+        conditions = plan.get("business_rules", {}).get("conditions", [])
         state["decision_result"] = {
             "action": "approve",
-            "conditions_evaluated": [],
+            "conditions_evaluated": [condition.get("name") for condition in conditions],
             "transformations_applied": [],
             "enriched_data": {},
-            "reasons": [],
+            "reasons": [condition.get("reason") for condition in conditions if condition.get("reason")],
         }
-        await emit(
-            run_id, "decide", "decision_final",
-            action=state["decision_result"]["action"],
-        )
+        await emit(run_id, "decide", "decision_final", action=state["decision_result"]["action"])
     except Exception as e:
         state["error"] = str(e)
         state["failed_stage"] = "decide"
@@ -211,7 +231,12 @@ async def act_node(state: PipelineState) -> PipelineState:
     await emit(run_id, "act", "stage_enter")
 
     try:
-        # TODO: Implement post-processing and output serialization
+        plan = _plan(state)
+        state["postprocess_result"] = {
+            "output_format": plan.get("postprocess", {}).get("output_format", "json"),
+            "included_fields": plan.get("postprocess", {}).get("fields_to_include", []),
+            "include_trace": plan.get("postprocess", {}).get("include_trace", False),
+        }
         await emit(run_id, "act", "run_completed")
     except Exception as e:
         state["error"] = str(e)

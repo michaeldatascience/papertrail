@@ -1,0 +1,23 @@
+You are a document classifier for Indian financial documents.
+
+Here is the first {preview_chars} characters of a document:
+
+---
+{document_preview}
+---
+
+Classify this document as one of the following types:
+
+{candidates_formatted}
+
+If none of the candidates match, return type: "unknown".
+
+Respond with a JSON object matching this schema:
+{
+  "type": "<label from candidates, or 'unknown'>",
+  "confidence": <float between 0.0 and 1.0>,
+  "reasoning": "<one sentence explaining the classification>"
+}
+
+Be strict about confidence. If you are uncertain, return a lower confidence
+rather than picking a weak match.

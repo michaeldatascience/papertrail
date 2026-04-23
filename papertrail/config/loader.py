@@ -1,55 +1,75 @@
-"""Configuration Loader (System level) for Papertrail."""
+# Config loader. Loads settings from env, and JSON configs from disk.
+# Default values can be set in the dataclass (overriden by .env etc)
+
 
 from __future__ import annotations
 import json
+import os
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from pydantic_settings import BaseSettings
-from pydantic import Field
+from typing import Any
 
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent.parent / "config"       # Go three levels up then into config dir
+CONFIG_DIR = Path(__file__).resolve().parent.parent.parent / "config"
+ENV_FILE = Path(__file__).resolve().parent.parent.parent / ".env"
 
 
-class Settings(BaseSettings):
-    # Application wide settings loaded from .env or other environment files (config/*.json)
+@dataclass(slots=True)
+class Settings:
+    """Application-wide settings loaded from environment or .env."""
 
-    # Database
-    ### Move this to config file with dev, staging and prod.
     database_url: str = "postgresql+asyncpg://papertrail:papertrail@localhost:5432/papertrail"
-
-    # LLM
     openrouter_api_key: str = ""
-
-    # Langfuse
     langfuse_secret_key: str = ""
     langfuse_public_key: str = ""
     langfuse_host: str = "https://cloud.langfuse.com"
-
-    # App
     app_env: str = "dev"
     log_level: str = "INFO"
     blob_storage_path: str = "./data/blobs"
+    projects_path: str = "./projects"
     playbooks_path: str = "./playbooks"
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    @classmethod
+    def from_env(cls) -> "Settings":
+        values = _load_env_file(ENV_FILE)
+        values.update(os.environ)
+        defaults = cls()
+        return cls(
+            database_url=values.get("DATABASE_URL", defaults.database_url),
+            openrouter_api_key=values.get("OPENROUTER_API_KEY", defaults.openrouter_api_key),
+            langfuse_secret_key=values.get("LANGFUSE_SECRET_KEY", defaults.langfuse_secret_key),
+            langfuse_public_key=values.get("LANGFUSE_PUBLIC_KEY", defaults.langfuse_public_key),
+            langfuse_host=values.get("LANGFUSE_HOST", defaults.langfuse_host),
+            app_env=values.get("APP_ENV", defaults.app_env),
+            log_level=values.get("LOG_LEVEL", defaults.log_level),
+            blob_storage_path=values.get("BLOB_STORAGE_PATH", defaults.blob_storage_path),
+            projects_path=values.get("PROJECTS_PATH", defaults.projects_path),
+            playbooks_path=values.get("PLAYBOOKS_PATH", defaults.playbooks_path),
+        )
 
 
-# cache setings to ensure loaidng just once
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    return Settings.from_env()
 
 
-def load_json_config(name: str) -> dict:
-    # Load indivdiual json config
-    
+def load_json_config(name: str) -> dict[str, Any]:
     path = CONFIG_DIR / name
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {path}")
-    with open(path) as f:
-        # print or debug
-        config = json.load(f)
-        # print(f"Loaded config from {path}: {config}")
-        return config
-        
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _load_env_file(path: Path) -> dict[str, str]:
+    if not path.is_file():
+        return {}
+    values: dict[str, str] = {}
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        values[key.strip()] = value.strip().strip('"').strip("'")
+    return values

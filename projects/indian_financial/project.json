@@ -1,0 +1,47 @@
+{
+  "slug": "indian_financial",
+  "name": "Indian Financial Documents",
+  "description": "Bounded domain for Indian financial document workflows.",
+  "version": "1.0.0",
+  "classification_universe": [
+    {
+      "label": "indian_cheque",
+      "description": "An Indian bank cheque",
+      "aliases": ["cheque", "check"]
+    },
+    {
+      "label": "indian_bank_statement",
+      "description": "A bank account statement",
+      "aliases": ["bank_statement", "statement"]
+    },
+    {
+      "label": "indian_salary_slip",
+      "description": "An employee salary slip",
+      "aliases": ["salary_slip", "pay_slip"]
+    },
+    {
+      "label": "indian_itr_form",
+      "description": "An income tax return form",
+      "aliases": ["itr_form", "tax_return"]
+    }
+  ],
+  "shared_prompts": {
+    "classify": "classify_indian_finance.txt"
+  },
+  "engine_defaults": {
+    "layout": "docling",
+    "text_extraction": "pymupdf",
+    "ocr": "paddleocr",
+    "ocr_fallback": "tesseract",
+    "tables": "pdfplumber",
+    "vision": null
+  },
+  "shared_tools": ["ifsc_lookup"],
+  "schema_fragments": {},
+  "playbooks": [
+    "indian_cheque",
+    "indian_bank_statement",
+    "indian_salary_slip",
+    "indian_itr_form"
+  ]
+}

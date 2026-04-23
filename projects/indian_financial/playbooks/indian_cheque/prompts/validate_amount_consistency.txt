@@ -1,0 +1,17 @@
+You are validating consistency between the amount in figures and amount in words
+on an Indian cheque.
+
+Amount in figures: {amount_figures}
+Amount in words: {amount_words}
+
+Check whether these two values represent the same amount. Consider:
+- Minor spelling variations in words are acceptable
+- Indian numbering (lakhs, crores) may be used
+- Ignore formatting differences (commas, spaces)
+
+Respond with:
+{
+  "passed": true | false,
+  "confidence": <0.0 to 1.0>,
+  "reason": "<brief explanation>"
+}

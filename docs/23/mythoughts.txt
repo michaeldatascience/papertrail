@@ -1,0 +1,138 @@
+**config/loader.py — loads .env and JSON configs.  are you hallucinating? where is this file?
+I could not find this file
+
+
+**config/prompts/*.txt 
+I have a feeling that some of these prompts are system level and some are actually playbook so they should not be here and we should have a way of adding (and referencing) them in the playbook 
+what can be at system level are
+
+
+classify documents
+correct_hint
+extract_natural
+extract_schema (but here elements_formatted should come from playbook)
+suggest
+
+---
+But these e.g.
+validate_amount_consistency, validate_payee_name, validate_soft_default
+shold not be here because they are playbook specific and can / should be managed by the playbook and not system.
+
+
+
+A note:
+Ideally there should be a provision of creating an abstract level on top of the playbook.
+So project->playbooks
+e.g.
+Project=Indian Financial Documents
+Playbooks: Check validation, ITR Form verification, 
+
+Project: KYC
+Playbooks: ID Verification, KYC validation etc
+
+but we are not having this concept, instead we are strating directly with playbooks. so lets assume that the project is for now managed at system level.
+
+Another idea is that perhaps we can achieve the proejct->playbook in this way
+We dont create any project folder/files
+Instead we have playbooks like this
+
+Playbooks/indian_cheque
+/_base/classify, meta, rules, schema, validat -> these are like the project related settings but they cant be overridden. So we achieve the concept concept of project settings this way. The override is not an issue as the project will not restrict much and will not clash with the playbooks
+/meta,rules,postprocess,schema,validate (here classify is not needed) -> these are the playbook specific rules
+
+
+
+**config/engines.json
+This looks fine but perhaps we shold have fallback for each and vsion has no data why?
+
+
+
+**playbooks/_base/*
+I notice here is classify.json here too so if this is here then why do we need this at /config/prompt/classify??
+Base seems like the right place 
+almost same for meta.json as it takes care of engines. So i understand that at /config we should define thigns, have the api keys etc and at /playboks/_base we should define the default things like engine for different operaiotns and other thigns. Important thing is they should not calsh with each other. There must be a single source of truth (inheritance too must lead to single source of truth with oton of override)
+So the playbooks/_base/*.json seem very valid to me but i am not sure if they are clashing or complementing the /config/ files
+
+
+**playbooks/indian_cheque/
+SO i understand this is an actual playbook
+here i notice that we have classify.json
+and as i noted before the concept of classificaiotn is actually at a project level and not the palybook level. so repeating the same example again
+if we had a project indian finanicila documens (where we are dealing with Indian financial documents) then the classificoant can include various entries like slary slip, check, itr, bank statement, credit card statement, tax receipt etc and the playbooks can (related to these documents) like ITR validation, bank statement consolidaton etc.
+
+So we need to seriously think of either creating a parent level project and move classify to that or limit the entire project to just one project (Indian finanicla documents) and then have everything else in the playubook level onloy
+
+
+The same pattern goes for all others. We need to brainstorm the two ideas either we create proejcts (so we sperate the project level settings in its own configs) and have separate playbook settings that inherit the project settings automaticfally and extend them.
+
+
+
+**papertrail/cli/             
+Mostly stubbed for now only run is functinlay
+We need to think about
+* we will be having fastapi soon so how can we make both cli and api exist togther?
+* will we need to move the actual code to something like core/or engine and then have routes for API and some wrapper for cli which in turn actually execute the same code.
+
+
+
+** papertrail/config/                                                                                                                                                                                                    
+This is fine for now
+
+
+**papertrail/models
+so what exactly are they? are they ORM or database files?
+and how can we ensure the compatibility / validation
+if they are like interfaces (runtime structures) thats great but we must ensure upward and downstream compatibility
+
+
+**papertrail/orchestration/
+So this is also mostly incomplete but i do see that we are using old names like pass_a, pass_b which we changed to meaningful names elsewhere
+
+
+**passes/preupload.py
+This needs attention. First of all we need to understand that there are two stages of almost everything. System level and then playbook level. 
+The system level things are very fundamental and the config / settings are stored (not in playbook) in the main config files. These are as simple as supported file types, file existance check, file size zero check, etc. So the execution of these checks must happen at a different (much before) stage. 
+Now the playbook level checks (we can call it preprocessing) are different. First of all the config/rules of these processing checks must be stored in the playbook somewhere and they should be run (only after they pass the system prechcks) when the playbook is being run. so we need to plan this and restructure it completely.
+
+**papertrail/englines
+These are all empty but i think they are intended properly.
+
+
+**papertrail/llm
+this is fine. we need to comletye all the incomete things
+Important thing to note that we need to consider/use this llm in abstraction. So lets say if we are using this from system level then the system may have its own set of prompots and it may build the prompt at different stage than the playbook prompt which can be stored and built separately. but the llm module doesn't care (shoudlnt) its only task is to communicate iwth the llm using generic function calls and parameters that are relavent for llm etc
+
+
+**papertrail/playbooks
+Is this really needed? aren't we already having the root/playbooks. if not needed lets not even think and remove everything. But if this is used for anything like playbook validation, mnerging, loading and execution happens
+then we need to review it thoroughly.
+
+
+**papertrail/storage
+so i only want to keep the code that we are using (or planning on building further) if its dead please remove it
+Although i do have a central big question and that is once we starting having a database then WHERE exactly will be that database wnat will be the ORM what about initial values. Somehow with the goal of keeping things simple we may have completely skipped the database part which may not be the best approach.
+also i am not sure if database and storage are the same thing and intended so
+
+
+We can safely remove 
+tests/   
+scripts/generate_sample_inputs.py    
+
+
+about DATA and data, we should think of the right place to keep them and also keep them under some configuration so we can modify them
+
+remove all the dead obsolete and temporary files
+
+                                                                                                                                                                                                                          
+ 1. papertrail/playbooks/models.py                                                                                                                                                                                         
+ 2. papertrail/orchestration/state.py                                                                                                                                                                                      
+ 3. papertrail/llm/fallback.py                                                                                                                                                                                             
+ 4. scripts/generate_sample_inputs.py                                                                                                                                                                                      
+ 5. tests/fixtures/*.txt                                                                                                                                                                                                   
+ 6. tests/integration/__init__.py                                                                                                                                                                                          
+ 7. tests/evaluation/__init__.py                                                                                                                                                                                           
+
+
+Scaffolds are Ok for now
+but lets not create any more or if we do lets atleast write a small comment on what is the inteiont and if possible create any know interface / function name etc
+
